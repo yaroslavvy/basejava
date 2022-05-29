@@ -5,41 +5,39 @@ import java.util.Arrays;
  */
 public class ArrayStorage {
     Resume[] storage = new Resume[10000];
-    private int arraySize = 0;
+    private int resumeCounter = 0;
 
     void clear() {
-        for (int i = 0; i < arraySize; i++) {
+        for (int i = 0; i < resumeCounter; i++) {
             storage[i] = null;
         }
-        arraySize = 0;
+        resumeCounter = 0;
     }
 
     void save(Resume resume) {
-        if (arraySize < 10000) {
-            storage[arraySize] = resume;
-            ++arraySize;
+        if (resumeCounter < storage.length) {
+            storage[resumeCounter] = resume;
+            ++resumeCounter;
         }
     }
 
     Resume get(String uuid) {
-        Resume resume = null;
-        for (int i = 0; i < arraySize; i++) {
+        for (int i = 0; i < resumeCounter; i++) {
             if (storage[i].uuid.equals(uuid)) {
-                resume = storage[i];
-                break;
+                return storage[i];
             }
         }
-        return resume;
+        return null;
     }
 
     void delete(String uuid) {
-        for (int i = 0; i < arraySize; i++) {
+        for (int i = 0; i < resumeCounter; i++) {
             if (storage[i].uuid.equals(uuid)) {
-                for (int y = i; y < arraySize - 1; y++) {
-                    storage[y] = storage[y + 1];
+                for (int j = i; j < resumeCounter - 1; j++) {
+                    storage[j] = storage[j + 1];
                 }
-                storage[arraySize - 1] = null;
-                --arraySize;
+                storage[resumeCounter - 1] = null;
+                --resumeCounter;
                 return;
             }
         }
@@ -49,10 +47,10 @@ public class ArrayStorage {
      * @return array, contains only Resumes in storage (without null)
      */
     Resume[] getAll() {
-        return Arrays.copyOf(storage, arraySize);
+        return Arrays.copyOf(storage, resumeCounter);
     }
 
     int size() {
-        return arraySize;
+        return resumeCounter;
     }
 }
