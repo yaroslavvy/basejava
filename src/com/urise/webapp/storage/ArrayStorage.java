@@ -75,14 +75,14 @@ public class ArrayStorage {
     }
 
     private void notifyResumeWasNotFound(String uuid) {
-        System.out.println("Резюме с uuid = " + uuid + ", не было найдено");
+        System.out.println("Resume uuid = " + uuid + " was not found");
     }
 
     private void notifyResumeStorageOverflow() {
-        System.out.println("Невозможно сохранить более " + storage.length + " резюме");
+        System.out.println("Can't store more than " + storage.length + " resumes");
     }
 
     private void notifyResumeWasNotSaved (String uuid) {
-        System.out.println("Невозможно сохранить резюме с uuid = " + uuid + ", так как оно уже существует");
+        System.out.println("Can't store resume uuid = " + uuid + " because it already exists");
     }
 }
