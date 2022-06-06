@@ -23,8 +23,7 @@ public class ArrayStorage {
         } else if (findIndex(resume.getUuid()) != -1) {
             System.out.println("Can't store resume uuid = " + resume.getUuid() + " because it already exists");
         } else {
-            storage[size] = resume;
-            ++size;
+            storage[size++] = resume;
         }
     }
 
@@ -40,14 +39,14 @@ public class ArrayStorage {
     public void delete(String uuid) {
         int index = findIndex(uuid);
         if (index != -1) {
-            for (; index < size - 1; index++) {
-                storage[index] = storage[index + 1];
+            if (index != size - 1) {
+                storage[index] = storage[size - 1];
             }
             storage[size - 1] = null;
             --size;
-            return;
+        } else {
+            System.out.println("Resume uuid = " + uuid + " was not found");
         }
-        System.out.println("Resume uuid = " + uuid + " was not found");
     }
 
     /**
@@ -65,8 +64,7 @@ public class ArrayStorage {
         int index = findIndex(resume.getUuid());
         if (index != -1) {
             storage[index] = resume;
-        }
-        else {
+        } else {
             System.out.println("Resume uuid = " + resume.getUuid() + " was not found");
         }
     }
