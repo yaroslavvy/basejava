@@ -10,13 +10,13 @@ public abstract class AbstractArrayStorage implements Storage {
     protected int size = 0;
 
     @Override
-    public void clear() {
+    public final void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
     }
 
     @Override
-    public int size() {
+    public final int size() {
         return size;
     }
 
@@ -31,7 +31,7 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     @Override
-    public Resume[] getAll() {
+    public final Resume[] getAll() {
         return Arrays.copyOf(storage, size);
     }
 
