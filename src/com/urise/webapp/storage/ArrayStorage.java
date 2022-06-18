@@ -11,7 +11,7 @@ public class ArrayStorage extends AbstractArrayStorage {
     public void save(Resume resume) {
         if (size == STORAGE_LIMIT) {
             System.out.println("Can't store more than " + STORAGE_LIMIT + " resumes");
-        } else if (findIndex(resume.getUuid()) != -1) {
+        } else if (findIndex(resume.getUuid()) >= 0) {
             System.out.println("Can't store resume uuid = " + resume.getUuid() + " because it already exists");
         } else {
             storage[size++] = resume;
@@ -21,7 +21,7 @@ public class ArrayStorage extends AbstractArrayStorage {
     @Override
     public void delete(String uuid) {
         int index = findIndex(uuid);
-        if (index != -1) {
+        if (index >= 0) {
             if (index != size - 1) {
                 storage[index] = storage[size - 1];
             }
@@ -29,16 +29,6 @@ public class ArrayStorage extends AbstractArrayStorage {
             --size;
         } else {
             System.out.println("Resume uuid = " + uuid + " was not found");
-        }
-    }
-
-    @Override
-    public void update(Resume resume) {
-        int index = findIndex(resume.getUuid());
-        if (index != -1) {
-            storage[index] = resume;
-        } else {
-            System.out.println("Resume uuid = " + resume.getUuid() + " was not found");
         }
     }
 
