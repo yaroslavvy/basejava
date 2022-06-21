@@ -13,7 +13,7 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void moveElements(int index) {
+    protected void fillDeletedElement(int index) {
         if (index != size - 1) {
             storage[index] = storage[size - 1];
         }
