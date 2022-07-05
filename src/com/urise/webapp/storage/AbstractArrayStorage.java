@@ -1,5 +1,8 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.exception.ExistStorageException;
+import com.urise.webapp.exception.NotExistStorageException;
+import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
@@ -18,12 +21,11 @@ public abstract class AbstractArrayStorage implements Storage {
     @Override
     public final void save(Resume resume) {
         if (size == STORAGE_LIMIT) {
-            System.out.println("Can't store more than " + STORAGE_LIMIT + " resumes");
-            return;
+            throw new StorageException("Storage overflow", resume.getUuid());
         }
         int index = findIndex(resume.getUuid());
         if (index >= 0) {
-            System.out.println("Can't store resume uuid = " + resume.getUuid() + " because it already exists");
+            throw new ExistStorageException(resume.getUuid());
         } else {
             insertResume(-(index + 1), resume);
             ++size;
@@ -36,8 +38,7 @@ public abstract class AbstractArrayStorage implements Storage {
         if (index >= 0) {
             return storage[index];
         }
-        System.out.println("Resume uuid = " + uuid + " was not found");
-        return null;
+        throw new NotExistStorageException(uuid);
     }
 
     @Override
@@ -48,7 +49,7 @@ public abstract class AbstractArrayStorage implements Storage {
             storage[size - 1] = null;
             --size;
         } else {
-            System.out.println("Resume uuid = " + uuid + " was not found");
+            throw new NotExistStorageException(uuid);
         }
     }
 
@@ -68,7 +69,7 @@ public abstract class AbstractArrayStorage implements Storage {
         if (index >= 0) {
             storage[index] = resume;
         } else {
-            System.out.println("Resume uuid = " + resume.getUuid() + " was not found");
+            throw new NotExistStorageException(resume.getUuid());
         }
     }
 
