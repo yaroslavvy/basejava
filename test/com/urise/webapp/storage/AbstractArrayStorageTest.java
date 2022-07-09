@@ -7,7 +7,6 @@ import com.urise.webapp.model.Resume;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,7 +100,7 @@ abstract class AbstractArrayStorageTest {
     void storageOverflow() {
         storage.clear();
         assertDoesNotThrow(() -> {
-            for (int i = 0; i < storage.getStorageLimit(); i++) {
+            for (int i = 0; i < storage.STORAGE_LIMIT; i++) {
                 storage.save(new Resume(UUID.randomUUID().toString()));
             }
         }, "Storage overflowed before reaching the maximum size");
