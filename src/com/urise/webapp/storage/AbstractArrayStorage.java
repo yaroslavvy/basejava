@@ -73,6 +73,10 @@ public abstract class AbstractArrayStorage implements Storage {
         }
     }
 
+    public int getStorageLimit() {
+        return STORAGE_LIMIT;
+    }
+
     protected abstract void insertResume(int insertIndex, Resume resume);
 
     protected abstract void fillDeletedElement(int index);
