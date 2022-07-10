@@ -12,7 +12,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 abstract class AbstractArrayStorageTest {
-    private final AbstractArrayStorage storage;
+    private final Storage storage;
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
     private static final String UUID_3 = "uuid3";
@@ -100,7 +100,7 @@ abstract class AbstractArrayStorageTest {
     void storageOverflow() {
         storage.clear();
         assertDoesNotThrow(() -> {
-            for (int i = 0; i < storage.STORAGE_LIMIT; i++) {
+            for (int i = 0; i < AbstractArrayStorage.STORAGE_LIMIT; i++) {
                 storage.save(new Resume(UUID.randomUUID().toString()));
             }
         }, "Storage overflowed before reaching the maximum size");
