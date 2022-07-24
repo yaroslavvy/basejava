@@ -24,7 +24,7 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected final Object getSearchKey(String uuid) {
+    protected final Integer getSearchKey(String uuid) {
         return storage.indexOf(new Resume(uuid));
     }
 
@@ -40,7 +40,7 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected final Resume doGet(Object searchKey) {
-        return storage.get(((Integer) searchKey));
+        return storage.get((Integer) searchKey);
     }
 
     @Override
@@ -50,6 +50,6 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected final void doUpdate(Object searchKey, Resume resume) {
-        storage.set(((Integer) searchKey), resume);
+        storage.set((Integer) searchKey, resume);
     }
 }
