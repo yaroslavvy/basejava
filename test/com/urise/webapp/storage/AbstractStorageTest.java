@@ -96,7 +96,7 @@ abstract class AbstractStorageTest {
 
     @Test
     void update() {
-        Resume updatedResume = new Resume(UUID_3,NEW_FULL_NAME_3);
+        Resume updatedResume = new Resume(UUID_3, NEW_FULL_NAME_3);
         storage.update(updatedResume);
         assertSize(3);
         assertSame(NEW_FULL_NAME_3, storage.get(UUID_3).getFullName());
