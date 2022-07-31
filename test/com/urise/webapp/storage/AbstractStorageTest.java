@@ -6,7 +6,9 @@ import com.urise.webapp.model.Resume;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,9 +18,13 @@ abstract class AbstractStorageTest {
     private static final String UUID_2 = "uuid2";
     private static final String UUID_3 = "uuid3";
     private static final String UUID_NOT_EXIST = "dummy";
-    private static final Resume RESUME_1 = new Resume(UUID_1);
-    private static final Resume RESUME_2 = new Resume(UUID_2);
-    private static final Resume RESUME_3 = new Resume(UUID_3);
+    private static final String FULL_NAME_1 = "Иван Петров";
+    private static final String FULL_NAME_2 = "Иван Петров";
+    private static final String FULL_NAME_3 = "Анна Сидорова";
+    private static final String NEW_FULL_NAME_3 = "Анна Петрова";
+    private static final Resume RESUME_1 = new Resume(UUID_1, FULL_NAME_1);
+    private static final Resume RESUME_2 = new Resume(UUID_2, FULL_NAME_2);
+    private static final Resume RESUME_3 = new Resume(UUID_3, FULL_NAME_3);
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -36,8 +42,8 @@ abstract class AbstractStorageTest {
     void clear() {
         storage.clear();
         assertSize(0);
-        Resume[] expectedArray = new Resume[0];
-        assertArrayEquals(expectedArray, storage.getAll());
+        List<Resume> expectedList = new ArrayList<>();
+        assertIterableEquals(expectedList, storage.getAllSorted());
     }
 
     @Test
@@ -69,15 +75,14 @@ abstract class AbstractStorageTest {
     }
 
     @Test
-    void getAll() {
-        Resume[] expectedArray = new Resume[]{
-                new Resume(UUID_1),
-                new Resume(UUID_2),
-                new Resume(UUID_3)
-        };
-        Resume[] actualArray = storage.getAll();
-        Arrays.sort(actualArray);
-        assertArrayEquals(expectedArray, actualArray);
+    void getAllSorted() {
+        List<Resume> expectedList = Arrays.asList(
+                new Resume(UUID_3, FULL_NAME_3),
+                new Resume(UUID_1, FULL_NAME_1),
+                new Resume(UUID_2, FULL_NAME_2)
+        );
+        List<Resume> actualList = storage.getAllSorted();
+        assertIterableEquals(expectedList, actualList);
     }
 
     @Test
@@ -91,10 +96,11 @@ abstract class AbstractStorageTest {
 
     @Test
     void update() {
-        Resume updatedResume = new Resume(UUID_1);
+        Resume updatedResume = new Resume(UUID_3,NEW_FULL_NAME_3);
         storage.update(updatedResume);
         assertSize(3);
-        assertSame(updatedResume, storage.get(UUID_1));
+        assertSame(NEW_FULL_NAME_3, storage.get(UUID_3).getFullName());
+        assertSame(updatedResume, storage.get(UUID_3));
     }
 
     @Test

@@ -6,13 +6,23 @@ package com.urise.webapp.model;
 public class Resume implements Comparable<Resume> {
     // Unique identifier
     private final String uuid;
+    private String fullName;
+
+    public Resume(String uuid, String fullName) {
+        this.uuid = uuid;
+        this.fullName = fullName;
+    }
 
     public Resume(String uuid) {
-        this.uuid = uuid;
+        this(uuid, "default name");
     }
 
     public String getUuid() {
         return uuid;
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 
     @Override
