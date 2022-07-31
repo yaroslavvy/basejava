@@ -21,7 +21,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     @Override
     public final List<Resume> getAllSorted() {
         return Arrays.stream(Arrays.copyOf(storage, size))
-                .sorted(COMPARATOR_FULL_NAME_THEN_UUID)
+                .sorted(RESUME_COMPARATOR_FULL_NAME_THEN_UUID)
                 .collect(Collectors.toList());
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface Storage {
 
-    Comparator<Resume> COMPARATOR_FULL_NAME_THEN_UUID = new Comparator<Resume>() {
+    Comparator<Resume> RESUME_COMPARATOR_FULL_NAME_THEN_UUID = new Comparator<Resume>() {
         @Override
         public int compare(Resume o1, Resume o2) {
             return o1.getFullName().compareTo(o2.getFullName());

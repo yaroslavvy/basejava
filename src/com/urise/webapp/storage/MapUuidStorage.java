@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class MapStorage extends AbstractStorage {
+public class MapUuidStorage extends AbstractStorage {
     private final Map<String, Resume> storage = new HashMap<>();
 
     @Override
@@ -18,7 +18,7 @@ public class MapStorage extends AbstractStorage {
     @Override
     public final List<Resume> getAllSorted() {
         return storage.values().stream()
-                .sorted(COMPARATOR_FULL_NAME_THEN_UUID)
+                .sorted(RESUME_COMPARATOR_FULL_NAME_THEN_UUID)
                 .collect(Collectors.toList());
     }
 
