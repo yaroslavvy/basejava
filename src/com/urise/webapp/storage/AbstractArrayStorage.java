@@ -5,7 +5,6 @@ import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class AbstractArrayStorage extends AbstractStorage {
     protected static final int STORAGE_LIMIT = 10000;
@@ -16,13 +15,6 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     public final void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
-    }
-
-    @Override
-    public final List<Resume> getAllSorted() {
-        return Arrays.stream(Arrays.copyOf(storage, size))
-                .sorted(RESUME_COMPARATOR_FULL_NAME_THEN_UUID)
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -64,6 +56,11 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     @Override
     protected final void doUpdate(Object searchKey, Resume resume) {
         storage[((Integer) searchKey)] = resume;
+    }
+
+    @Override
+    public final List<Resume> doCopyAll() {
+        return Arrays.asList(Arrays.copyOf(storage, size));
     }
 
     protected abstract void insertResume(Object searchKey, Resume resume);
