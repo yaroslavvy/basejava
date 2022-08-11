@@ -3,13 +3,13 @@
     <Appenders>
         <Console name="LogToConsole" target="SYSTEM_OUT">
             <PatternLayout
-                    pattern="%highlight{%d{HH:mm:ss.SSS} %t %-5level [%c][%M] - %msg%n}{TRACE=grey, DEBUG=green, INFO=cyan, WARN=yellow, ERROR=red}"
+                    pattern="%highlight{%d{HH:mm:ss.SSS} [%-5p][%-10.10t][%c][%M] - %msg%n}{TRACE=grey, DEBUG=green, INFO=cyan, WARN=yellow, ERROR=red}"
                     disableAnsi="false"/>
         </Console>
         <RollingFile name="RollingFile" fileName="logs/app.log"
                      filePattern="logs/archive/%d{dd-MM-yyyy}/app-%d{dd-MM-yyyy_HH}-%i.log.gz">
             <PatternLayout>
-                <pattern>%d{HH:mm:ss.SSS} %t %-5level [%c][%M] - %msg%n</pattern>
+                <pattern>%d{HH:mm:ss.SSS} [%-5p][%-10.10t][%c][%M] - %msg%n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
@@ -18,7 +18,7 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Root level="trace" additivity="true">
+        <Root level="trace">
             <AppenderRef ref="LogToConsole"/>
             <AppenderRef ref="RollingFile"/>
         </Root>
