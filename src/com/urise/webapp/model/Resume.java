@@ -37,7 +37,7 @@ public class Resume implements Comparable<Resume> {
     }
 
     public Map<ContactType, String> getContacts() {
-        return new EnumMap<ContactType, String>(contacts);
+        return contacts;
     }
 
     public void setContacts(Map<ContactType, String> contacts) {
@@ -45,16 +45,11 @@ public class Resume implements Comparable<Resume> {
     }
 
     public Map<SectionType, Section> getSections() {
-        return new EnumMap<SectionType, Section>(sections);
+        return sections;
     }
 
     public void setSections(Map<SectionType, Section> sections) {
         this.sections = sections;
-    }
-
-    @Override
-    public String toString() {
-        return uuid;
     }
 
     @Override
@@ -70,6 +65,11 @@ public class Resume implements Comparable<Resume> {
     @Override
     public int hashCode() {
         return uuid.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return uuid;
     }
 
     @Override

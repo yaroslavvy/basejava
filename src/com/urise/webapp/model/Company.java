@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Company {
+
     private String name;
     private String website;
     private List<Period> periods = new ArrayList<>();
@@ -34,10 +35,39 @@ public class Company {
     }
 
     public List<Period> getPeriods() {
-        return new ArrayList<>(periods);
+        return periods;
     }
 
     public void setPeriods(List<Period> periods) {
         this.periods = periods;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Company company = (Company) o;
+
+        if (name != null ? !name.equals(company.name) : company.name != null) return false;
+        if (website != null ? !website.equals(company.website) : company.website != null) return false;
+        return periods != null ? periods.equals(company.periods) : company.periods == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (website != null ? website.hashCode() : 0);
+        result = 31 * result + (periods != null ? periods.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "name='" + name + '\'' +
+                ", website='" + website + '\'' +
+                ", periods=" + periods +
+                '}';
     }
 }
