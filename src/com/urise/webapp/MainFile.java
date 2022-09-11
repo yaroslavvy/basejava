@@ -19,7 +19,7 @@ public class MainFile {
         try {
             filePath = dir.getCanonicalPath();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         String[] elementsOfPath = filePath.split("\\\\");
         if (elementsOfPath.length != 0) {
