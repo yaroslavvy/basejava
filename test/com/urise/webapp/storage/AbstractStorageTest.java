@@ -1,5 +1,6 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.ResumeTestData;
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
@@ -22,9 +23,9 @@ abstract class AbstractStorageTest {
     private static final String FULL_NAME_2 = "Иван Петров";
     private static final String FULL_NAME_3 = "Анна Сидорова";
     private static final String NEW_FULL_NAME_3 = "Анна Петрова";
-    private static final Resume RESUME_1 = new Resume(UUID_1, FULL_NAME_1);
-    private static final Resume RESUME_2 = new Resume(UUID_2, FULL_NAME_2);
-    private static final Resume RESUME_3 = new Resume(UUID_3, FULL_NAME_3);
+    private static final Resume RESUME_1 = ResumeTestData.createAndFillResume(UUID_1, FULL_NAME_1);
+    private static final Resume RESUME_2 = ResumeTestData.createAndFillResume(UUID_2, FULL_NAME_2);
+    private static final Resume RESUME_3 = ResumeTestData.createAndFillResume(UUID_3, FULL_NAME_3);
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -48,7 +49,7 @@ abstract class AbstractStorageTest {
 
     @Test
     void save() {
-        Resume newResume = new Resume("uuid4");
+        Resume newResume = ResumeTestData.createAndFillResume("uuid4");
         storage.save(newResume);
         assertGet(newResume);
         assertSize(4);
@@ -77,9 +78,9 @@ abstract class AbstractStorageTest {
     @Test
     void getAllSorted() {
         List<Resume> expectedList = Arrays.asList(
-                new Resume(UUID_3, FULL_NAME_3),
-                new Resume(UUID_1, FULL_NAME_1),
-                new Resume(UUID_2, FULL_NAME_2)
+                ResumeTestData.createAndFillResume(UUID_3, FULL_NAME_3),
+                ResumeTestData.createAndFillResume(UUID_1, FULL_NAME_1),
+                ResumeTestData.createAndFillResume(UUID_2, FULL_NAME_2)
         );
         List<Resume> actualList = storage.getAllSorted();
         assertIterableEquals(expectedList, actualList);
@@ -96,7 +97,7 @@ abstract class AbstractStorageTest {
 
     @Test
     void update() {
-        Resume updatedResume = new Resume(UUID_3, NEW_FULL_NAME_3);
+        Resume updatedResume = ResumeTestData.createAndFillResume(UUID_3, NEW_FULL_NAME_3);
         storage.update(updatedResume);
         assertSize(3);
         assertSame(NEW_FULL_NAME_3, storage.get(UUID_3).getFullName());

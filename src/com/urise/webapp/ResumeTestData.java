@@ -8,8 +8,16 @@ import java.util.*;
 
 public class ResumeTestData {
     public static void main(String[] args) {
+        printResume(createAndFillResume("someUUID", "Григорий Кислин"));
+    }
 
-        Resume resume = new Resume("Григорий Кислин");
+    public static Resume createAndFillResume(String fullName) {
+        return createAndFillResume(UUID.randomUUID().toString(), fullName);
+    }
+
+    public static Resume createAndFillResume(String uuid, String fullName) {
+
+        Resume resume = new Resume(uuid, fullName);
 
         Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
         contacts.put(ContactType.PHONE, "+7(921) 855-0482");
@@ -88,8 +96,8 @@ public class ResumeTestData {
                         "Проектирование и разработка онлайн платформы управления проектами Wrike" +
                                 " (Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis)." +
                                 " Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO.",
-                        DateUtil.of(2014,Month.OCTOBER),
-                        DateUtil.of(2016,Month.JANUARY))));
+                        DateUtil.of(2014, Month.OCTOBER),
+                        DateUtil.of(2016, Month.JANUARY))));
 
         Company ritCenter = new Company("RIT Center",
                 null,
@@ -102,8 +110,8 @@ public class ResumeTestData {
                                 " браузера документов MS Office. Maven + plugin development, Ant, Apache Commons," +
                                 " Spring security, Spring MVC, Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting," +
                                 " Unix shell remote scripting via ssh tunnels, PL/Python",
-                        DateUtil.of(2012,Month.APRIL),
-                        DateUtil.of(2014,Month.OCTOBER))));
+                        DateUtil.of(2012, Month.APRIL),
+                        DateUtil.of(2014, Month.OCTOBER))));
 
         Company luxoft = new Company("Luxoft (Deutsche Bank)",
                 "https://www.luxoft.ru/",
@@ -113,8 +121,8 @@ public class ResumeTestData {
                                 " Реализация RIA-приложения для администрирования, мониторинга и анализа результатов" +
                                 " в области алгоритмического трейдинга. JPA, Spring, Spring-MVC," +
                                 " GWT, ExtGWT (GXT), Highstock, Commet, HTML5.",
-                        DateUtil.of(2010,Month.DECEMBER),
-                        DateUtil.of(2012,Month.APRIL))));
+                        DateUtil.of(2010, Month.DECEMBER),
+                        DateUtil.of(2012, Month.APRIL))));
 
         Company yota = new Company("Yota",
                 "https://www.yota.ru/",
@@ -123,73 +131,73 @@ public class ResumeTestData {
                                 " (GlassFish v2.1, v3, OC4J, EJB3, JAX-WS RI 2.1, Servlet 2.4, JSP, JMX, JMS, Maven2)." +
                                 " Реализация администрирования, статистики и мониторинга фреймворка. Разработка" +
                                 " online JMX клиента (Python/ Jython, Django, ExtJS)",
-                        DateUtil.of(2008,Month.JUNE),
-                        DateUtil.of(2010,Month.DECEMBER))));
+                        DateUtil.of(2008, Month.JUNE),
+                        DateUtil.of(2010, Month.DECEMBER))));
 
         Company enkata = new Company("Enkata",
                 "http://www.openspan.com/enkata/",
                 Arrays.asList(new Period("Разработчик ПО",
                         "Реализация клиентской (Eclipse RCP) и серверной (JBoss 4.2, Hibernate 3.0, Tomcat, JMS)" +
                                 " частей кластерного J2EE приложения (OLAP, Data mining).",
-                        DateUtil.of(2007,Month.MARCH),
-                        DateUtil.of(2008,Month.JUNE))));
+                        DateUtil.of(2007, Month.MARCH),
+                        DateUtil.of(2008, Month.JUNE))));
 
         Company siemens = new Company("Siemens AG",
                 "https://new.siemens.com/ru/ru.html",
                 Arrays.asList(new Period("Разработчик ПО",
                         "Разработка информационной модели, проектирование интерфейсов," +
                                 " реализация и отладка ПО на мобильной IN платформе Siemens @vantage (Java, Unix).",
-                        DateUtil.of(2005,Month.JANUARY),
-                        DateUtil.of(2007,Month.FEBRUARY))));
+                        DateUtil.of(2005, Month.JANUARY),
+                        DateUtil.of(2007, Month.FEBRUARY))));
 
         Company alcatel = new Company("Alcatel",
                 "www.alcatel.ru",
                 Arrays.asList(new Period("Инженер по аппаратному и программному тестированию",
                         "Тестирование, отладка, внедрение ПО цифровой телефонной станции Alcatel 1000 S12 (CHILL, ASM).",
-                        DateUtil.of(1997,Month.SEPTEMBER),
-                        DateUtil.of(2005,Month.JANUARY))));
+                        DateUtil.of(1997, Month.SEPTEMBER),
+                        DateUtil.of(2005, Month.JANUARY))));
         CompanyListSection experience = new CompanyListSection();
         experience.setCompanies(Arrays.asList(javaOnlineProject, wrike, ritCenter, luxoft, yota, enkata, siemens, alcatel));
 
         Company coursera = new Company("Coursera",
                 "https://www.coursera.org/course/progfun",
                 Arrays.asList(new Period("\'Functional Programming Principles in Scala\' by Martin Odersky", null,
-                        DateUtil.of(2013,Month.MARCH),
-                        DateUtil.of(2013,Month.MAY))));
+                        DateUtil.of(2013, Month.MARCH),
+                        DateUtil.of(2013, Month.MAY))));
 
         Company luxoft_edu = new Company("Luxoft",
                 "https://ibs-training.ru/kurs/obektno-orientirovannyy_analiz_i_proektirovanie_na_uml.html",
                 Arrays.asList(new Period("Курс \'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\'", null,
-                        DateUtil.of(2011,Month.MARCH),
-                        DateUtil.of(2011,Month.APRIL))));
+                        DateUtil.of(2011, Month.MARCH),
+                        DateUtil.of(2011, Month.APRIL))));
 
         Company siemens_edu = new Company("Siemens AG",
                 "https://www.siemens.com/global/en.html",
                 Arrays.asList(new Period("3 месяца обучения мобильным IN сетям (Берлин)", null,
-                        DateUtil.of(2005,Month.JANUARY),
-                        DateUtil.of(2005,Month.APRIL))));
+                        DateUtil.of(2005, Month.JANUARY),
+                        DateUtil.of(2005, Month.APRIL))));
 
         Company alcatel_edu = new Company("Alcatel",
                 "www.alcatel.ru",
                 Arrays.asList(new Period("6 месяцев обучения цифровым телефонным сетям (Москва)", null,
-                        DateUtil.of(1997,Month.SEPTEMBER),
-                        DateUtil.of(1998,Month.MARCH))));
+                        DateUtil.of(1997, Month.SEPTEMBER),
+                        DateUtil.of(1998, Month.MARCH))));
 
         Company itmo = new Company("Санкт-Петербургский национальный исследовательский" +
                 " университет информационных технологий, механики и оптики",
                 "https://itmo.ru/",
                 Arrays.asList(new Period("Аспирантура (программист С, С++)", null,
-                                DateUtil.of(1993,Month.SEPTEMBER),
-                                DateUtil.of(1996,Month.JULY)),
+                                DateUtil.of(1993, Month.SEPTEMBER),
+                                DateUtil.of(1996, Month.JULY)),
                         new Period("Инженер (программист Fortran, C)", null,
-                                DateUtil.of(1987,Month.SEPTEMBER),
-                                DateUtil.of(1993,Month.JULY))));
+                                DateUtil.of(1987, Month.SEPTEMBER),
+                                DateUtil.of(1993, Month.JULY))));
 
         Company mfti = new Company("Заочная физико-техническая школа при МФТИ",
                 "https://school.mipt.ru/",
                 Arrays.asList(new Period("Закончил с отличием", null,
-                        DateUtil.of(1984,Month.SEPTEMBER),
-                        DateUtil.of(1987,Month.JUNE))));
+                        DateUtil.of(1984, Month.SEPTEMBER),
+                        DateUtil.of(1987, Month.JUNE))));
 
         CompanyListSection education = new CompanyListSection();
         education.setCompanies(Arrays.asList(coursera, luxoft_edu, siemens_edu, alcatel_edu, itmo, mfti));
@@ -204,7 +212,7 @@ public class ResumeTestData {
 
         resume.setSections(sections);
 
-        printResume(resume);
+        return resume;
     }
 
     private static void printResume(Resume resume) {
