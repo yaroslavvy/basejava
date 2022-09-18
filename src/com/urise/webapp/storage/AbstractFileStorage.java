@@ -13,7 +13,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     private final File directory;
 
     protected AbstractFileStorage(File directory) {
-        Objects.requireNonNull(directory, "Direcory for resume must not be null!");
+        Objects.requireNonNull(directory, "Directory for resume must not be null!");
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory!");
         }
@@ -39,7 +39,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
             file.createNewFile();
             doWrite(file, resume);
         } catch (IOException e) {
-            throw new StorageException("IO error", file.getName(), e);
+            throw new StorageException("file save error", file.getName(), e);
         }
     }
 
@@ -49,7 +49,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         try {
             resume = doRead(file);
         } catch (IOException e) {
-            throw new StorageException("IO error", file.getName(), e);
+            throw new StorageException("file read error", file.getName(), e);
         }
         return resume;
     }
@@ -57,7 +57,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected void doDelete(File file) {
         if (!file.delete()) {
-            throw new StorageException("File deletion failed", file.getName());
+            throw new StorageException("file delete error", file.getName());
         }
     }
 
@@ -66,7 +66,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         try {
             doWrite(file, resume);
         } catch (IOException e) {
-            throw new StorageException("IO error", file.getName(), e);
+            throw new StorageException("file update error", file.getName(), e);
         }
     }
 
@@ -74,7 +74,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected List<Resume> doCopyAll() {
         File[] files = directory.listFiles();
         if (files == null) {
-            throw new StorageException("IO error", "uuid is unknown");
+            throw new StorageException("IO error", null);
         }
         List<Resume> resumeList = new ArrayList<>(size());
         for (File file : files) {
@@ -87,7 +87,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     public void clear() {
         File[] files = directory.listFiles();
         if (files == null) {
-            throw new StorageException("Unsuccessful storage clear. IO error", "uuid is unknown");
+            throw new StorageException("Unsuccessful storage clear. IO error", null);
         }
         for (File file : files) {
             if (file.isFile()) {
@@ -100,7 +100,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     public int size() {
         File[] files = directory.listFiles();
         if (files == null) {
-            throw new StorageException("IO error", "uuid is unknown");
+            throw new StorageException("IO error", null);
         }
         int size = 0;
         for (File file : files) {

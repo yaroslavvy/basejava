@@ -85,14 +85,14 @@ public class ResumeTestData {
 
         Company javaOnlineProject = new Company("Java Online Projects",
                 "https://javaops.ru/",
-                Arrays.asList(new Period("Автор проекта.",
+                Arrays.asList(new Company.Period("Автор проекта.",
                         "Создание, организация и проведение Java онлайн проектов и стажировок.",
                         DateUtil.of(2013, Month.OCTOBER),
-                        null)));
+                        DateUtil.NOW)));
 
         Company wrike = new Company("Wrike",
                 "https://www.wrike.com/",
-                Arrays.asList(new Period("Старший разработчик (backend)",
+                Arrays.asList(new Company.Period("Старший разработчик (backend)",
                         "Проектирование и разработка онлайн платформы управления проектами Wrike" +
                                 " (Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis)." +
                                 " Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO.",
@@ -101,7 +101,7 @@ public class ResumeTestData {
 
         Company ritCenter = new Company("RIT Center",
                 null,
-                Arrays.asList(new Period("Java архитектор",
+                Arrays.asList(new Company.Period("Java архитектор",
                         "Организация процесса разработки системы ERP для разных окружений: релизная политика," +
                                 " версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway)," +
                                 " конфигурирование системы (pgBoucer, Nginx), AAA via SSO. Архитектура БД и серверной части системы." +
@@ -115,7 +115,7 @@ public class ResumeTestData {
 
         Company luxoft = new Company("Luxoft (Deutsche Bank)",
                 "https://www.luxoft.ru/",
-                Arrays.asList(new Period("Ведущий программист",
+                Arrays.asList(new Company.Period("Ведущий программист",
                         "Участие в проекте Deutsche Bank CRM (WebLogic, Hibernate, Spring, Spring MVC," +
                                 " SmartGWT, GWT, Jasper, Oracle). Реализация клиентской и серверной части CRM." +
                                 " Реализация RIA-приложения для администрирования, мониторинга и анализа результатов" +
@@ -126,7 +126,7 @@ public class ResumeTestData {
 
         Company yota = new Company("Yota",
                 "https://www.yota.ru/",
-                Arrays.asList(new Period("Ведущий специалист",
+                Arrays.asList(new Company.Period("Ведущий специалист",
                         "Дизайн и имплементация Java EE фреймворка для отдела \"Платежные Системы\"" +
                                 " (GlassFish v2.1, v3, OC4J, EJB3, JAX-WS RI 2.1, Servlet 2.4, JSP, JMX, JMS, Maven2)." +
                                 " Реализация администрирования, статистики и мониторинга фреймворка. Разработка" +
@@ -136,7 +136,7 @@ public class ResumeTestData {
 
         Company enkata = new Company("Enkata",
                 "http://www.openspan.com/enkata/",
-                Arrays.asList(new Period("Разработчик ПО",
+                Arrays.asList(new Company.Period("Разработчик ПО",
                         "Реализация клиентской (Eclipse RCP) и серверной (JBoss 4.2, Hibernate 3.0, Tomcat, JMS)" +
                                 " частей кластерного J2EE приложения (OLAP, Data mining).",
                         DateUtil.of(2007, Month.MARCH),
@@ -144,7 +144,7 @@ public class ResumeTestData {
 
         Company siemens = new Company("Siemens AG",
                 "https://new.siemens.com/ru/ru.html",
-                Arrays.asList(new Period("Разработчик ПО",
+                Arrays.asList(new Company.Period("Разработчик ПО",
                         "Разработка информационной модели, проектирование интерфейсов," +
                                 " реализация и отладка ПО на мобильной IN платформе Siemens @vantage (Java, Unix).",
                         DateUtil.of(2005, Month.JANUARY),
@@ -152,7 +152,7 @@ public class ResumeTestData {
 
         Company alcatel = new Company("Alcatel",
                 "www.alcatel.ru",
-                Arrays.asList(new Period("Инженер по аппаратному и программному тестированию",
+                Arrays.asList(new Company.Period("Инженер по аппаратному и программному тестированию",
                         "Тестирование, отладка, внедрение ПО цифровой телефонной станции Alcatel 1000 S12 (CHILL, ASM).",
                         DateUtil.of(1997, Month.SEPTEMBER),
                         DateUtil.of(2005, Month.JANUARY))));
@@ -161,41 +161,41 @@ public class ResumeTestData {
 
         Company coursera = new Company("Coursera",
                 "https://www.coursera.org/course/progfun",
-                Arrays.asList(new Period("\'Functional Programming Principles in Scala\' by Martin Odersky", null,
+                Arrays.asList(new Company.Period("\'Functional Programming Principles in Scala\' by Martin Odersky", null,
                         DateUtil.of(2013, Month.MARCH),
                         DateUtil.of(2013, Month.MAY))));
 
         Company luxoft_edu = new Company("Luxoft",
                 "https://ibs-training.ru/kurs/obektno-orientirovannyy_analiz_i_proektirovanie_na_uml.html",
-                Arrays.asList(new Period("Курс \'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\'", null,
+                Arrays.asList(new Company.Period("Курс \'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\'", null,
                         DateUtil.of(2011, Month.MARCH),
                         DateUtil.of(2011, Month.APRIL))));
 
         Company siemens_edu = new Company("Siemens AG",
                 "https://www.siemens.com/global/en.html",
-                Arrays.asList(new Period("3 месяца обучения мобильным IN сетям (Берлин)", null,
+                Arrays.asList(new Company.Period("3 месяца обучения мобильным IN сетям (Берлин)", null,
                         DateUtil.of(2005, Month.JANUARY),
                         DateUtil.of(2005, Month.APRIL))));
 
         Company alcatel_edu = new Company("Alcatel",
                 "www.alcatel.ru",
-                Arrays.asList(new Period("6 месяцев обучения цифровым телефонным сетям (Москва)", null,
+                Arrays.asList(new Company.Period("6 месяцев обучения цифровым телефонным сетям (Москва)", null,
                         DateUtil.of(1997, Month.SEPTEMBER),
                         DateUtil.of(1998, Month.MARCH))));
 
         Company itmo = new Company("Санкт-Петербургский национальный исследовательский" +
                 " университет информационных технологий, механики и оптики",
                 "https://itmo.ru/",
-                Arrays.asList(new Period("Аспирантура (программист С, С++)", null,
+                Arrays.asList(new Company.Period("Аспирантура (программист С, С++)", null,
                                 DateUtil.of(1993, Month.SEPTEMBER),
                                 DateUtil.of(1996, Month.JULY)),
-                        new Period("Инженер (программист Fortran, C)", null,
+                        new Company.Period("Инженер (программист Fortran, C)", null,
                                 DateUtil.of(1987, Month.SEPTEMBER),
                                 DateUtil.of(1993, Month.JULY))));
 
         Company mfti = new Company("Заочная физико-техническая школа при МФТИ",
                 "https://school.mipt.ru/",
-                Arrays.asList(new Period("Закончил с отличием", null,
+                Arrays.asList(new Company.Period("Закончил с отличием", null,
                         DateUtil.of(1984, Month.SEPTEMBER),
                         DateUtil.of(1987, Month.JUNE))));
 
@@ -267,15 +267,15 @@ public class ResumeTestData {
                                     if (name != null) {
                                         System.out.println(name);
                                     }
-                                    String website = company.getWebsite();
+                                    String website = company.getUrl();
                                     if (website != null) {
                                         System.out.println(website);
                                     }
-                                    List<Period> periods = company.getPeriods();
+                                    List<Company.Period> periods = company.getPeriods();
                                     if (periods != null) {
-                                        for (Period period : periods) {
+                                        for (Company.Period period : periods) {
                                             System.out.println(period.getBeginDate() + " - "
-                                                    + (period.getEndDate() == null ? "Сейчас" : period.getEndDate().toString())
+                                                    + (DateUtil.NOW.isEqual(period.getEndDate()) ? "Сейчас" : period.getEndDate().toString())
                                                     + "\t\t" + period.getTitle());
                                             String description = period.getDescription();
                                             if (description != null) {

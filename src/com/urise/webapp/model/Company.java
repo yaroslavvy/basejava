@@ -1,20 +1,21 @@
 package com.urise.webapp.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Company {
-
     private String name;
-    private String website;
+    private String url;
     private List<Period> periods = new ArrayList<>();
 
     public Company() {
     }
 
-    public Company(String name, String website, List<Period> periods) {
+    public Company(String name, String url, List<Period> periods) {
         this.name = name;
-        this.website = website;
+        this.url = url;
         this.periods = periods;
     }
 
@@ -26,12 +27,12 @@ public class Company {
         this.name = name;
     }
 
-    public String getWebsite() {
-        return website;
+    public String getUrl() {
+        return url;
     }
 
-    public void setWebsite(String website) {
-        this.website = website;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public List<Period> getPeriods() {
@@ -50,14 +51,14 @@ public class Company {
         Company company = (Company) o;
 
         if (name != null ? !name.equals(company.name) : company.name != null) return false;
-        if (website != null ? !website.equals(company.website) : company.website != null) return false;
+        if (url != null ? !url.equals(company.url) : company.url != null) return false;
         return periods != null ? periods.equals(company.periods) : company.periods == null;
     }
 
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (website != null ? website.hashCode() : 0);
+        result = 31 * result + (url != null ? url.hashCode() : 0);
         result = 31 * result + (periods != null ? periods.hashCode() : 0);
         return result;
     }
@@ -66,8 +67,90 @@ public class Company {
     public String toString() {
         return "Company{" +
                 "name='" + name + '\'' +
-                ", website='" + website + '\'' +
+                ", website='" + url + '\'' +
                 ", periods=" + periods +
                 '}';
+    }
+
+    public static class Period {
+        private String title;
+        private String description;
+        private LocalDate beginDate;
+        private LocalDate endDate;
+
+        public Period(String title, String description, LocalDate beginDate, LocalDate endDate) {
+            Objects.requireNonNull(title, "title must not be null");
+            Objects.requireNonNull(beginDate, "begin date must not be null");
+            Objects.requireNonNull(endDate, "end date must not be null");
+            this.title = title;
+            this.description = description;
+            this.beginDate = beginDate;
+            this.endDate = endDate;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public LocalDate getBeginDate() {
+            return beginDate;
+        }
+
+        public void setBeginDate(LocalDate beginDate) {
+            this.beginDate = beginDate;
+        }
+
+        public LocalDate getEndDate() {
+            return endDate;
+        }
+
+        public void setEndDate(LocalDate endDate) {
+            this.endDate = endDate;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Period period = (Period) o;
+
+            if (title != null ? !title.equals(period.title) : period.title != null) return false;
+            if (description != null ? !description.equals(period.description) : period.description != null)
+                return false;
+            if (beginDate != null ? !beginDate.equals(period.beginDate) : period.beginDate != null) return false;
+            return endDate != null ? endDate.equals(period.endDate) : period.endDate == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = title != null ? title.hashCode() : 0;
+            result = 31 * result + (description != null ? description.hashCode() : 0);
+            result = 31 * result + (beginDate != null ? beginDate.hashCode() : 0);
+            result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Period{" +
+                    "title='" + title + '\'' +
+                    ", description='" + description + '\'' +
+                    ", beginDate=" + beginDate +
+                    ", endDate=" + endDate +
+                    '}';
+        }
     }
 }
