@@ -74,17 +74,11 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected List<Resume> doCopyAll() {
         File[] files = directory.listFiles();
         if (files == null) {
-            throw new RuntimeException("IO error");
+            throw new StorageException("IO error", "uuid is unknown");
         }
         List<Resume> resumeList = new ArrayList<>(size());
         for (File file : files) {
-            if (file.isFile()) {
-                try {
-                    resumeList.add(doRead(file));
-                } catch (IOException e) {
-                    throw new StorageException("IO error", file.getName(), e);
-                }
-            }
+            resumeList.add(doGet(file));
         }
         return resumeList;
     }
@@ -93,7 +87,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     public void clear() {
         File[] files = directory.listFiles();
         if (files == null) {
-            throw new RuntimeException("Unsuccessful storage clear. IO error");
+            throw new StorageException("Unsuccessful storage clear. IO error", "uuid is unknown");
         }
         for (File file : files) {
             if (file.isFile()) {
@@ -106,12 +100,14 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     public int size() {
         File[] files = directory.listFiles();
         if (files == null) {
-            throw new RuntimeException("IO error");
+            throw new StorageException("IO error", "uuid is unknown");
         }
         int size = 0;
         for (File file : files) {
-            if (file.isFile()) {
+            try {
+                doGet(file);
                 ++size;
+            } catch (StorageException e) {
             }
         }
         return size;
