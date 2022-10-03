@@ -1,11 +1,13 @@
 package com.urise.webapp.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Company {
+public class Company implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String name;
     private String url;
     private List<Period> periods = new ArrayList<>();
@@ -72,7 +74,8 @@ public class Company {
                 '}';
     }
 
-    public static class Period {
+    public static class Period implements Serializable {
+        private static final long serialVersionUID = 1L;
         private String title;
         private String description;
         private LocalDate beginDate;

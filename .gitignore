@@ -4,7 +4,4 @@ out
 log
 logs
 lib
-
-
-
-
+storage/*

@@ -7,6 +7,7 @@ import com.urise.webapp.model.Resume;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,17 +16,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 abstract class AbstractStorageTest {
     protected final Storage storage;
-    private static final String UUID_1 = "uuid1";
-    private static final String UUID_2 = "uuid2";
-    private static final String UUID_3 = "uuid3";
-    private static final String UUID_NOT_EXIST = "dummy";
-    private static final String FULL_NAME_1 = "Иван Петров";
-    private static final String FULL_NAME_2 = "Иван Петров";
-    private static final String FULL_NAME_3 = "Анна Сидорова";
-    private static final String NEW_FULL_NAME_3 = "Анна Петрова";
-    private static final Resume RESUME_1 = ResumeTestData.createAndFillResume(UUID_1, FULL_NAME_1);
-    private static final Resume RESUME_2 = ResumeTestData.createAndFillResume(UUID_2, FULL_NAME_2);
-    private static final Resume RESUME_3 = ResumeTestData.createAndFillResume(UUID_3, FULL_NAME_3);
+    protected static final String UUID_1 = "uuid1";
+    protected static final String UUID_2 = "uuid2";
+    protected static final String UUID_3 = "uuid3";
+    protected static final String UUID_NOT_EXIST = "dummy";
+    protected static final String FULL_NAME_1 = "Иван Петров";
+    protected static final String FULL_NAME_2 = "Иван Петров";
+    protected static final String FULL_NAME_3 = "Анна Сидорова";
+    protected static final String NEW_FULL_NAME_3 = "Анна Петрова";
+    protected static final Resume RESUME_1 = ResumeTestData.createAndFillResume(UUID_1, FULL_NAME_1);
+    protected static final Resume RESUME_2 = ResumeTestData.createAndFillResume(UUID_2, FULL_NAME_2);
+    protected static final Resume RESUME_3 = ResumeTestData.createAndFillResume(UUID_3, FULL_NAME_3);
+    protected static final File STORAGE_DIR = new File("./storage");
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;

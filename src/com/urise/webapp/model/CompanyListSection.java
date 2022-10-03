@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CompanyListSection extends Section {
+    private static final long serialVersionUID = 1L;
     private List<Company> companies = new ArrayList<>();
 
     public List<Company> getCompanies() {

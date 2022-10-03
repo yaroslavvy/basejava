@@ -47,7 +47,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         Resume resume = null;
         try {
             resume = doRead(new BufferedInputStream(new FileInputStream(file)));
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new StorageException("file read error", file.getName(), e);
         }
         return resume;
@@ -77,7 +77,9 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         }
         List<Resume> resumeList = new ArrayList<>(size());
         for (File file : files) {
-            resumeList.add(doGet(file));
+            if (file.isFile()) {
+                resumeList.add(doGet(file));
+            }
         }
         return resumeList;
     }
@@ -114,5 +116,5 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     protected abstract void doWrite(OutputStream outputStream, Resume resume) throws IOException;
 
-    protected abstract Resume doRead(InputStream inputStream) throws IOException;
+    protected abstract Resume doRead(InputStream inputStream) throws Exception;
 }

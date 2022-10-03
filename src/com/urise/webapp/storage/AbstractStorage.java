@@ -31,7 +31,7 @@ public abstract class AbstractStorage<SK> implements Storage {
         try {
             doSave(searchKey, resume);
         } catch (Exception e) {
-            LOGGER.warn(e.getMessage(), e);// TODO Del me. I know it bad practice. ↓↓↓
+            LOGGER.error(e.getMessage(), e);// TODO Del me. I know it bad practice. ↓↓↓
             // Rule - catch and log or catch and throw in another exception. Never both. Only for demonstration of logger work
             throw e;
         }
@@ -70,7 +70,7 @@ public abstract class AbstractStorage<SK> implements Storage {
         SK searchKey = getSearchKey(uuid);
         if (!isExist(searchKey)) {
             NotExistStorageException exception = new NotExistStorageException(uuid);
-            LOGGER.warn(exception.getMessage(), exception);// TODO Del me. I know it bad practice. ↓↓↓
+            LOGGER.error(exception.getMessage(), exception);// TODO Del me. I know it bad practice. ↓↓↓
             // Rule - catch and log or catch and throw in another exception. Never both. Only for demonstration of logger work
             throw exception;
         }
@@ -81,7 +81,7 @@ public abstract class AbstractStorage<SK> implements Storage {
         SK searchKey = getSearchKey(uuid);
         if (isExist(searchKey)) {
             ExistStorageException exception = new ExistStorageException(uuid);
-            LOGGER.warn(exception.getMessage(), exception);// TODO Del me. I know it bad practice. ↓↓↓
+            LOGGER.error(exception.getMessage(), exception);// TODO Del me. I know it bad practice. ↓↓↓
             // Rule - catch and log or catch and throw in another exception. Never both. Only for demonstration of logger work
             throw exception;
         }
