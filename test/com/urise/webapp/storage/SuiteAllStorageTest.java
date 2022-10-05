@@ -12,7 +12,8 @@ import org.junit.platform.suite.api.SuiteDisplayName;
         ListStorageTest.class,
         MapUuidStorageTest.class,
         MapResumeStorageTest.class,
-        ObjectStreamStorageTest.class
+        ContextFileStorageTest.class,
+        ContextPathStorageTest.class
 })
 public class SuiteAllStorageTest {
 }
