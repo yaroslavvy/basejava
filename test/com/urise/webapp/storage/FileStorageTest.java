@@ -2,25 +2,23 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.ResumeTestData;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.storage.serializer.ObjectStreamStrategy;
+import com.urise.webapp.storage.serializer.StreamStrategy;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.File;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-abstract class AbstractContextStorageTest extends AbstractStorageTest {
-    protected static final String STORAGE_DIR = "./storage";
+class FileStorageTest extends AbstractStorageTest {
+    public FileStorageTest() {
+        super(new FileStorage(new File(STORAGE_DIR), new ObjectStreamStrategy())); //here can be any strategy
+    }
 
-    protected static Stream<FormatStrategy> strategyGenerator() {
-        return Stream.of(new ObjectStreamFormatStrategy()
-                //, new XMLFormatStrategy()
-                //, new JSONFormatStrategy()
-        );
-    } //here point all strategy which test with all derivated classes
-
-    protected AbstractContextStorageTest(Storage storage) {
-        super(storage);
+    private static Stream<StreamStrategy> strategyGenerator() {
+        return Stream.of(new ObjectStreamStrategy());//here point all strategy which should be tested
     }
 
     @Override
@@ -69,50 +67,50 @@ abstract class AbstractContextStorageTest extends AbstractStorageTest {
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void clear(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void clear(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         super.clear();
     }
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void save(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void save(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         super.save();
     }
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void get(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void get(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         super.get();
     }
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void delete(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void delete(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         super.delete();
     }
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void getAllSorted(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void getAllSorted(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         super.getAllSorted();
     }
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void size(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void size(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         super.size();
     }
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void update(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void update(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         Resume updatedResume = ResumeTestData.createAndFillResume(UUID_3, NEW_FULL_NAME_3);
         storage.update(updatedResume);
         assertSize(3);
@@ -122,29 +120,29 @@ abstract class AbstractContextStorageTest extends AbstractStorageTest {
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void getNotExist(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void getNotExist(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         super.getNotExist();
     }
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void deleteNotExist(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void deleteNotExist(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         super.deleteNotExist();
     }
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void updateNotExist(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void updateNotExist(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         super.updateNotExist();
     }
 
     @ParameterizedTest
     @MethodSource("strategyGenerator")
-    void saveExist(FormatStrategy formatStrategy) {
-        ((AbstractContextStorage) storage).setFormatStrategy(formatStrategy);
+    void saveExist(StreamStrategy streamStrategy) {
+        ((FileStorage) storage).setFormatStrategy(streamStrategy);
         super.saveExist();
     }
 }

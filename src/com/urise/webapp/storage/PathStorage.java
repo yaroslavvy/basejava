@@ -2,6 +2,7 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.storage.serializer.StreamStrategy;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -10,20 +11,28 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class ContextPathStorage extends AbstractContextStorage<Path> {
+public class PathStorage extends AbstractStorage<Path> {
     private final Path directory;
+    private StreamStrategy streamStrategy;
 
-    public ContextPathStorage(String dir, FormatStrategy formatStrategy) {
-        super(formatStrategy);
+    public PathStorage(String dir, StreamStrategy streamStrategy) {
         directory = Paths.get(dir);
+        setFormatStrategy(streamStrategy);
         if (Files.isRegularFile(directory)) {
             throw new IllegalArgumentException(dir + " is not directory!");
         }
         if (!Files.isReadable(directory) || !Files.isWritable(directory)) {
-            throw new IllegalArgumentException("Directory " + dir + " is not readable/writable!");
+            throw new IllegalArgumentException("directory " + dir + " is not readable/writable!");
         }
+    }
+
+    public void setFormatStrategy(StreamStrategy streamStrategy) {
+        Objects.requireNonNull(streamStrategy, "format strategy for storage must not be null!");
+        this.streamStrategy = streamStrategy;
     }
 
     @Override
@@ -40,21 +49,19 @@ public class ContextPathStorage extends AbstractContextStorage<Path> {
     protected void doSave(Path path, Resume resume) {
         try {
             Files.createFile(path);
-            getFormatStrategy().doWrite(new BufferedOutputStream(Files.newOutputStream(path)), resume);
         } catch (IOException e) {
             throw new StorageException("file save error", path.getFileName().toString(), e);
         }
+        doUpdate(path, resume);
     }
 
     @Override
     protected Resume doGet(Path path) {
-        Resume resume = null;
         try {
-            resume = getFormatStrategy().doRead(new BufferedInputStream(Files.newInputStream(path)));
+            return streamStrategy.doRead(new BufferedInputStream(Files.newInputStream(path)));
         } catch (Exception e) {
             throw new StorageException("file read error", path.getFileName().toString(), e);
         }
-        return resume;
     }
 
     @Override
@@ -69,7 +76,7 @@ public class ContextPathStorage extends AbstractContextStorage<Path> {
     @Override
     protected void doUpdate(Path path, Resume resume) {
         try {
-            getFormatStrategy().doWrite(new BufferedOutputStream(Files.newOutputStream(path)), resume);
+            streamStrategy.doWrite(new BufferedOutputStream(Files.newOutputStream(path)), resume);
         } catch (IOException e) {
             throw new StorageException("file update error", path.getFileName().toString(), e);
         }
@@ -77,40 +84,27 @@ public class ContextPathStorage extends AbstractContextStorage<Path> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        List<Resume> resumeList = null;
-        try {
-            resumeList = Files.list(directory).filter(Files::isRegularFile)
-                    .map(this::doGet).collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new StorageException("IO error", null, e);
-        }
-        return resumeList;
+        return getFileStream("unsuccessful copy all resumes from the storage")
+                .map(this::doGet).collect(Collectors.toList());
     }
 
     @Override
     public void clear() {
-        try {
-            Files.list(directory).filter(Files::isRegularFile).forEach(this::doDelete);
-        } catch (IOException e) {
-            throw new StorageException("Unsuccessful storage clear. IO error", null);
-        }
+        getFileStream("unsuccessful storage clear")
+                .forEach(this::doDelete);
     }
 
     @Override
     public int size() {
-        int size = 0;
+        return (int) getFileStream("unsuccessful resume counting in the storage")
+                .count();
+    }
+
+    private Stream<Path> getFileStream(String messageException) {
         try {
-            size = (int) (Files.list(directory).filter(Files::isRegularFile).filter(path -> {
-                try {
-                    doGet(path);
-                    return true;
-                } catch (StorageException e) {
-                    return false;
-                }
-            }).count());
+            return Files.list(directory);
         } catch (IOException e) {
-            throw new StorageException("IO error", null, e);
+            throw new StorageException(messageException, null, e);
         }
-        return size;
     }
 }

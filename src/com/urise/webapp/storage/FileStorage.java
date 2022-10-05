@@ -2,25 +2,32 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.storage.serializer.StreamStrategy;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ContextFileStorage extends AbstractContextStorage<File> {
+public class FileStorage extends AbstractStorage<File> {
     private final File directory;
+    private StreamStrategy streamStrategy;
 
-    public ContextFileStorage(File directory, FormatStrategy formatStrategy) {
-        super(formatStrategy);
-        Objects.requireNonNull(directory, "Directory for resume must not be null!");
+    public FileStorage(File directory, StreamStrategy streamStrategy) {
+        Objects.requireNonNull(directory, "directory for resume must not be null!");
+        setFormatStrategy(streamStrategy);
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory!");
         }
         if (!directory.canRead() || !directory.canWrite()) {
-            throw new IllegalArgumentException("Directory " + directory.getAbsolutePath() + " is not readable/writable!");
+            throw new IllegalArgumentException("directory " + directory.getAbsolutePath() + " is not readable/writable!");
         }
         this.directory = directory;
+    }
+
+    public void setFormatStrategy(StreamStrategy streamStrategy) {
+        Objects.requireNonNull(streamStrategy, "format strategy for storage must not be null!");
+        this.streamStrategy = streamStrategy;
     }
 
     @Override
@@ -37,21 +44,19 @@ public class ContextFileStorage extends AbstractContextStorage<File> {
     protected void doSave(File file, Resume resume) {
         try {
             file.createNewFile();
-            getFormatStrategy().doWrite(new BufferedOutputStream(new FileOutputStream(file)), resume);
         } catch (IOException e) {
             throw new StorageException("file save error", file.getName(), e);
         }
+        doUpdate(file, resume);
     }
 
     @Override
     protected Resume doGet(File file) {
-        Resume resume = null;
         try {
-            resume = getFormatStrategy().doRead(new BufferedInputStream(new FileInputStream(file)));
+            return streamStrategy.doRead(new BufferedInputStream(new FileInputStream(file)));
         } catch (Exception e) {
             throw new StorageException("file read error", file.getName(), e);
         }
-        return resume;
     }
 
     @Override
@@ -64,7 +69,7 @@ public class ContextFileStorage extends AbstractContextStorage<File> {
     @Override
     protected void doUpdate(File file, Resume resume) {
         try {
-            getFormatStrategy().doWrite(new BufferedOutputStream(new FileOutputStream(file)), resume);
+            streamStrategy.doWrite(new BufferedOutputStream(new FileOutputStream(file)), resume);
         } catch (IOException e) {
             throw new StorageException("file update error", file.getName(), e);
         }
@@ -72,46 +77,30 @@ public class ContextFileStorage extends AbstractContextStorage<File> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        File[] files = directory.listFiles();
-        if (files == null) {
-            throw new StorageException("IO error", null);
-        }
         List<Resume> resumeList = new ArrayList<>(size());
-        for (File file : files) {
-            if (file.isFile()) {
-                resumeList.add(doGet(file));
-            }
+        for (File file : getFileArray("unsuccessful copy all resumes from the storage")) {
+            resumeList.add(doGet(file));
         }
         return resumeList;
     }
 
     @Override
     public void clear() {
-        File[] files = directory.listFiles();
-        if (files == null) {
-            throw new StorageException("Unsuccessful storage clear. IO error", null);
-        }
-        for (File file : files) {
-            if (file.isFile()) {
-                doDelete(file);
-            }
+        for (File file : getFileArray("unsuccessful storage clear")) {
+            doDelete(file);
         }
     }
 
     @Override
     public int size() {
-        File[] files = directory.listFiles();
-        if (files == null) {
-            throw new StorageException("IO error", null);
+        return getFileArray("unsuccessful resume counting in the storage").length;
+    }
+
+    private File[] getFileArray(String messageException) {
+        try {
+            return Objects.requireNonNull(directory.listFiles());
+        } catch (Exception e) {
+            throw new StorageException(messageException, null, e);
         }
-        int size = 0;
-        for (File file : files) {
-            try {
-                doGet(file);
-                ++size;
-            } catch (StorageException e) {
-            }
-        }
-        return size;
     }
 }
