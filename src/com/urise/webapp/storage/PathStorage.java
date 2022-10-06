@@ -84,27 +84,24 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        return getFileStream("unsuccessful copy all resumes from the storage")
-                .map(this::doGet).collect(Collectors.toList());
+        return getFileStream().map(this::doGet).collect(Collectors.toList());
     }
 
     @Override
     public void clear() {
-        getFileStream("unsuccessful storage clear")
-                .forEach(this::doDelete);
+        getFileStream().forEach(this::doDelete);
     }
 
     @Override
     public int size() {
-        return (int) getFileStream("unsuccessful resume counting in the storage")
-                .count();
+        return (int) getFileStream().count();
     }
 
-    private Stream<Path> getFileStream(String messageException) {
+    private Stream<Path> getFileStream() {
         try {
             return Files.list(directory);
         } catch (IOException e) {
-            throw new StorageException(messageException, null, e);
+            throw new StorageException("unsuccessful getting file list from directory: " + directory, null, e);
         }
     }
 }

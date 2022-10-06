@@ -78,7 +78,7 @@ public class FileStorage extends AbstractStorage<File> {
     @Override
     protected List<Resume> doCopyAll() {
         List<Resume> resumeList = new ArrayList<>(size());
-        for (File file : getFileArray("unsuccessful copy all resumes from the storage")) {
+        for (File file : getFileArray()) {
             resumeList.add(doGet(file));
         }
         return resumeList;
@@ -86,21 +86,21 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        for (File file : getFileArray("unsuccessful storage clear")) {
+        for (File file : getFileArray()) {
             doDelete(file);
         }
     }
 
     @Override
     public int size() {
-        return getFileArray("unsuccessful resume counting in the storage").length;
+        return getFileArray().length;
     }
 
-    private File[] getFileArray(String messageException) {
+    private File[] getFileArray() {
         try {
             return Objects.requireNonNull(directory.listFiles());
         } catch (Exception e) {
-            throw new StorageException(messageException, null, e);
+            throw new StorageException("unsuccessful getting file list from directory: " + directory.getAbsolutePath(), null, e);
         }
     }
 }
