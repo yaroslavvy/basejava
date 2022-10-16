@@ -100,7 +100,7 @@ public class FileStorage extends AbstractStorage<File> {
         try {
             return Objects.requireNonNull(directory.listFiles());
         } catch (Exception e) {
-            throw new StorageException("unsuccessful getting file list from directory: " + directory.getAbsolutePath(), null, e);
+            throw new StorageException("unsuccessful getting file list from directory: " + directory.getAbsolutePath(), e);
         }
     }
 }
