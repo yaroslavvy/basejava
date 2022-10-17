@@ -20,7 +20,12 @@ public class ListStorage extends AbstractStorage<Integer> {
 
     @Override
     protected final Integer getSearchKey(String uuid) {
-        return storage.indexOf(new Resume(uuid, DEFAULT_FULL_NAME));
+        for (int i = 0; i < storage.size(); ++i) {
+            if (storage.get(i) != null && storage.get(i).getUuid().equals(uuid)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override

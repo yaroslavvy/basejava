@@ -7,6 +7,9 @@ public class CompanyListSection extends Section {
     private static final long serialVersionUID = 1L;
     private List<Company> companies = new ArrayList<>();
 
+    public CompanyListSection() {
+    }
+
     public List<Company> getCompanies() {
         return new ArrayList<>(companies);
     }

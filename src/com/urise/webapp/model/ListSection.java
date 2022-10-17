@@ -7,6 +7,9 @@ public class ListSection extends Section {
     private static final long serialVersionUID = 1L;
     private List<String> list = new ArrayList<>();
 
+    public ListSection() {
+    }
+
     public List<String> getList() {
         return list;
     }

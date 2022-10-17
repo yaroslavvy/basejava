@@ -4,6 +4,9 @@ public class TextSection extends Section {
     private static final long serialVersionUID = 1L;
     private String text;
 
+    public TextSection() {
+    }
+
     public String getText() {
         return text;
     }
