@@ -16,6 +16,7 @@ public class CompanyListSection extends Section {
     }
 
     public void addCompany(Company company) {
+        Objects.requireNonNull(company, "company must not be null");
         companies.add(company);
     }
 

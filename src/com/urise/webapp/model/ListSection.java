@@ -16,6 +16,7 @@ public class ListSection extends Section {
     }
 
     public void addLine(String line) {
+        Objects.requireNonNull(line, "line must not be null");
         list.add(line);
     }
 

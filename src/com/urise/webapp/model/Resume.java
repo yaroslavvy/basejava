@@ -46,6 +46,8 @@ public class Resume implements Comparable<Resume>, Serializable {
     }
 
     public void addContact(ContactType contactType, String contact) {
+        Objects.requireNonNull(contactType, "contact type must not be null");
+        Objects.requireNonNull(contact, "contact must not be null");
         contacts.put(contactType, contact);
     }
 
@@ -54,6 +56,8 @@ public class Resume implements Comparable<Resume>, Serializable {
     }
 
     public void addSection(SectionType sectionType, Section section) {
+        Objects.requireNonNull(sectionType, "section type must not be null");
+        Objects.requireNonNull(section, "section type must not be null");
         sections.put(sectionType, section);
     }
 

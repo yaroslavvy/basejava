@@ -47,6 +47,7 @@ public class Company implements Serializable {
     }
 
     public void addPeriod(Period period) {
+        Objects.requireNonNull(period, "period must not be null");
         periods.add(period);
     }
 

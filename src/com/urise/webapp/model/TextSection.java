@@ -1,5 +1,7 @@
 package com.urise.webapp.model;
 
+import java.util.Objects;
+
 public class TextSection extends Section {
     private static final long serialVersionUID = 1L;
     private String text;
@@ -12,6 +14,7 @@ public class TextSection extends Section {
     }
 
     public void setText(String text) {
+        Objects.requireNonNull(text, "string must not be null");
         this.text = text;
     }
 
