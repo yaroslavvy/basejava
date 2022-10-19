@@ -15,7 +15,10 @@ import org.junit.platform.suite.api.SuiteDisplayName;
         ObjectStreamFileStorageTest.class,
         ObjectStreamPathStorageTest.class,
         XmlStreamFileStorageTest.class,
-        XmlStreamPathStorageTest.class
+        XmlStreamPathStorageTest.class,
+        JsonStreamFileStorageTest.class,
+        JsonStreamPathStorageTest.class
+
 })
 public class SuiteAllStorageTest {
 }
