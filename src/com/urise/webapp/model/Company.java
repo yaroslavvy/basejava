@@ -16,15 +16,14 @@ public class Company implements Serializable {
     private static final long serialVersionUID = 1L;
     private String name;
     private String url;
-    private List<Period> periods = new ArrayList<>();
+    private final List<Period> periods = new ArrayList<>();
 
     public Company() {
     }
 
-    public Company(String name, String url, List<Period> periods) {
-        this.name = name;
-        this.url = url;
-        this.periods = periods;
+    public Company(String name, String url) {
+        this.name = Objects.requireNonNull(name, "company name must not be null");
+        this.url = Objects.requireNonNull(url, "company url must not be null");
     }
 
     public String getName() {
@@ -47,35 +46,28 @@ public class Company implements Serializable {
         return periods;
     }
 
-    public void setPeriods(List<Period> periods) {
-        this.periods = periods;
+    public void addPeriod(Period period) {
+        periods.add(period);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Company company = (Company) o;
-
-        if (name != null ? !name.equals(company.name) : company.name != null) return false;
-        if (url != null ? !url.equals(company.url) : company.url != null) return false;
-        return periods != null ? periods.equals(company.periods) : company.periods == null;
+        return Objects.equals(name, company.name) && Objects.equals(url, company.url) && Objects.equals(periods, company.periods);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (url != null ? url.hashCode() : 0);
-        result = 31 * result + (periods != null ? periods.hashCode() : 0);
-        return result;
+        return Objects.hash(name, url, periods);
     }
 
     @Override
     public String toString() {
         return "Company{" +
                 "name='" + name + '\'' +
-                ", website='" + url + '\'' +
+                ", url='" + url + '\'' +
                 ", periods=" + periods +
                 '}';
     }
@@ -96,9 +88,10 @@ public class Company implements Serializable {
         }
 
         public Period(String title, String description, LocalDate beginDate, LocalDate endDate) {
-            Objects.requireNonNull(title, "title must not be null");
-            Objects.requireNonNull(beginDate, "begin date must not be null");
-            Objects.requireNonNull(endDate, "end date must not be null");
+            Objects.requireNonNull(title, "period title must not be null");
+            Objects.requireNonNull(description, "period description must not be null");
+            Objects.requireNonNull(beginDate, "period begin date must not be null");
+            Objects.requireNonNull(endDate, "period end date must not be null");
             this.title = title;
             this.description = description;
             this.beginDate = beginDate;
@@ -109,55 +102,29 @@ public class Company implements Serializable {
             return title;
         }
 
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
         public String getDescription() {
             return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
         }
 
         public LocalDate getBeginDate() {
             return beginDate;
         }
 
-        public void setBeginDate(LocalDate beginDate) {
-            this.beginDate = beginDate;
-        }
-
         public LocalDate getEndDate() {
             return endDate;
-        }
-
-        public void setEndDate(LocalDate endDate) {
-            this.endDate = endDate;
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-
             Period period = (Period) o;
-
-            if (title != null ? !title.equals(period.title) : period.title != null) return false;
-            if (description != null ? !description.equals(period.description) : period.description != null)
-                return false;
-            if (beginDate != null ? !beginDate.equals(period.beginDate) : period.beginDate != null) return false;
-            return endDate != null ? endDate.equals(period.endDate) : period.endDate == null;
+            return Objects.equals(title, period.title) && Objects.equals(description, period.description) && Objects.equals(beginDate, period.beginDate) && Objects.equals(endDate, period.endDate);
         }
 
         @Override
         public int hashCode() {
-            int result = title != null ? title.hashCode() : 0;
-            result = 31 * result + (description != null ? description.hashCode() : 0);
-            result = 31 * result + (beginDate != null ? beginDate.hashCode() : 0);
-            result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
-            return result;
+            return Objects.hash(title, description, beginDate, endDate);
         }
 
         @Override

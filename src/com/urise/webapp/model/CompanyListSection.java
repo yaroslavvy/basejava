@@ -2,10 +2,11 @@ package com.urise.webapp.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CompanyListSection extends Section {
     private static final long serialVersionUID = 1L;
-    private List<Company> companies = new ArrayList<>();
+    private final List<Company> companies = new ArrayList<>();
 
     public CompanyListSection() {
     }
@@ -14,23 +15,21 @@ public class CompanyListSection extends Section {
         return new ArrayList<>(companies);
     }
 
-    public void setCompanies(List<Company> companies) {
-        this.companies = companies;
+    public void addCompany(Company company) {
+        companies.add(company);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         CompanyListSection that = (CompanyListSection) o;
-
-        return companies != null ? companies.equals(that.companies) : that.companies == null;
+        return Objects.equals(companies, that.companies);
     }
 
     @Override
     public int hashCode() {
-        return companies != null ? companies.hashCode() : 0;
+        return Objects.hash(companies);
     }
 
     @Override

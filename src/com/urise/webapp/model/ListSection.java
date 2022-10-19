@@ -2,10 +2,11 @@ package com.urise.webapp.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ListSection extends Section {
     private static final long serialVersionUID = 1L;
-    private List<String> list = new ArrayList<>();
+    private final List<String> list = new ArrayList<>();
 
     public ListSection() {
     }
@@ -14,23 +15,21 @@ public class ListSection extends Section {
         return list;
     }
 
-    public void setList(List<String> list) {
-        this.list = list;
+    public void addLine(String line) {
+        list.add(line);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         ListSection that = (ListSection) o;
-
-        return list != null ? list.equals(that.list) : that.list == null;
+        return Objects.equals(list, that.list);
     }
 
     @Override
     public int hashCode() {
-        return list != null ? list.hashCode() : 0;
+        return Objects.hash(list);
     }
 
     @Override
