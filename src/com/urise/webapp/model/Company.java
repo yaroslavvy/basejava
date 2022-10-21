@@ -23,7 +23,7 @@ public class Company implements Serializable {
 
     public Company(String name, String url) {
         this.name = Objects.requireNonNull(name, "company name must not be null");
-        this.url = Objects.requireNonNull(url, "company url must not be null");
+        this.url = url;
     }
 
     public String getName() {
@@ -90,7 +90,6 @@ public class Company implements Serializable {
 
         public Period(String title, String description, LocalDate beginDate, LocalDate endDate) {
             Objects.requireNonNull(title, "period title must not be null");
-            Objects.requireNonNull(description, "period description must not be null");
             Objects.requireNonNull(beginDate, "period begin date must not be null");
             Objects.requireNonNull(endDate, "period end date must not be null");
             this.title = title;

@@ -96,7 +96,7 @@ public class ResumeTestData {
                 DateUtil.of(2016, Month.JANUARY)));
         experience.addCompany(wrike);
 
-        Company ritCenter = new Company("RIT Center", "");
+        Company ritCenter = new Company("RIT Center", null);
         ritCenter.addPeriod(new Company.Period("Java архитектор",
                 "Организация процесса разработки системы ERP для разных окружений: релизная политика," +
                         " версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway)," +
@@ -156,42 +156,41 @@ public class ResumeTestData {
 
         CompanyListSection education = new CompanyListSection();
         Company coursera = new Company("Coursera", "https://www.coursera.org/course/progfun");
-        coursera.addPeriod(new Company.Period("\'Functional Programming Principles in Scala\' by Martin Odersky", "",
+        coursera.addPeriod(new Company.Period("\'Functional Programming Principles in Scala\' by Martin Odersky", null,
                 DateUtil.of(2013, Month.MARCH),
                 DateUtil.of(2013, Month.MAY)));
         education.addCompany(coursera);
 
         Company luxoft_edu = new Company("Luxoft", "https://ibs-training.ru/kurs/obektno-orientirovannyy_analiz_i_proektirovanie_na_uml.html");
-        luxoft_edu.addPeriod(new Company.Period("Курс \'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\'", "" +
-                "",
+        luxoft_edu.addPeriod(new Company.Period("Курс \'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\'", null,
                 DateUtil.of(2011, Month.MARCH),
                 DateUtil.of(2011, Month.APRIL)));
         education.addCompany(luxoft_edu);
 
         Company siemens_edu = new Company("Siemens AG", "https://www.siemens.com/global/en.html");
-        siemens_edu.addPeriod(new Company.Period("3 месяца обучения мобильным IN сетям (Берлин)", "",
+        siemens_edu.addPeriod(new Company.Period("3 месяца обучения мобильным IN сетям (Берлин)", null,
                 DateUtil.of(2005, Month.JANUARY),
                 DateUtil.of(2005, Month.APRIL)));
         education.addCompany(siemens_edu);
 
         Company alcatel_edu = new Company("Alcatel", "www.alcatel.ru");
-        alcatel_edu.addPeriod(new Company.Period("6 месяцев обучения цифровым телефонным сетям (Москва)", "",
+        alcatel_edu.addPeriod(new Company.Period("6 месяцев обучения цифровым телефонным сетям (Москва)", null,
                 DateUtil.of(1997, Month.SEPTEMBER),
                 DateUtil.of(1998, Month.MARCH)));
         education.addCompany(alcatel_edu);
 
         Company itmo = new Company("Санкт-Петербургский национальный исследовательский " +
                 "университет информационных технологий, механики и оптики", "https://itmo.ru/");
-        itmo.addPeriod(new Company.Period("Аспирантура (программист С, С++)", "",
+        itmo.addPeriod(new Company.Period("Аспирантура (программист С, С++)", null,
                 DateUtil.of(1993, Month.SEPTEMBER),
                 DateUtil.of(1996, Month.JULY)));
-        itmo.addPeriod(new Company.Period("Инженер (программист Fortran, C)", "",
+        itmo.addPeriod(new Company.Period("Инженер (программист Fortran, C)", null,
                 DateUtil.of(1987, Month.SEPTEMBER),
                 DateUtil.of(1993, Month.JULY)));
         education.addCompany(itmo);
 
         Company mfti = new Company("Заочная физико-техническая школа при МФТИ", "https://school.mipt.ru/");
-        mfti.addPeriod(new Company.Period("Закончил с отличием", "",
+        mfti.addPeriod(new Company.Period("Закончил с отличием", null,
                 DateUtil.of(1984, Month.SEPTEMBER),
                 DateUtil.of(1987, Month.JUNE)));
         education.addCompany(mfti);

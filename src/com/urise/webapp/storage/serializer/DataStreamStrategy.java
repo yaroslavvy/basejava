@@ -6,6 +6,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class DataStreamStrategy implements StreamStrategy {
 
@@ -46,12 +47,12 @@ public class DataStreamStrategy implements StreamStrategy {
                         dataOutputStream.writeInt(companyList.size());
                         for (Company company : companyList) {
                             dataOutputStream.writeUTF(company.getName());
-                            dataOutputStream.writeUTF(company.getUrl());
+                            dataOutputStream.writeUTF(Optional.ofNullable(company.getUrl()).orElse(""));
                             List<Company.Period> periods = company.getPeriods();
                             dataOutputStream.writeInt(periods.size());
                             for (Company.Period period : periods) {
                                 dataOutputStream.writeUTF(period.getTitle());
-                                dataOutputStream.writeUTF(period.getDescription());
+                                dataOutputStream.writeUTF(Optional.ofNullable(period.getDescription()).orElse(""));
                                 dataOutputStream.writeUTF(period.getBeginDate().toString());
                                 dataOutputStream.writeUTF(period.getEndDate().toString());
                             }
@@ -96,11 +97,15 @@ public class DataStreamStrategy implements StreamStrategy {
                         int companyCounter = dataInputStream.readInt();
                         CompanyListSection companyListSection = new CompanyListSection();
                         for (; companyCounter > 0; --companyCounter) {
-                            Company company = new Company(dataInputStream.readUTF(), dataInputStream.readUTF());
+                            String companyName = dataInputStream.readUTF();
+                            String companyUrl = dataInputStream.readUTF();
+                            Company company = new Company(companyName, companyUrl.isEmpty() ? null : companyUrl);
                             int periodCounter = dataInputStream.readInt();
                             for (; periodCounter > 0; --periodCounter) {
-                                company.addPeriod(new Company.Period(dataInputStream.readUTF(),
-                                        dataInputStream.readUTF(),
+                                String periodTitle = dataInputStream.readUTF();
+                                String periodDescription = dataInputStream.readUTF();
+                                company.addPeriod(new Company.Period(periodTitle,
+                                        periodDescription.isEmpty() ? null : periodDescription,
                                         LocalDate.parse(dataInputStream.readUTF()),
                                         LocalDate.parse(dataInputStream.readUTF())));
                             }
