@@ -59,13 +59,11 @@ public class DataStreamStrategy implements StreamStrategy {
         try (DataInputStream dataInputStream = new DataInputStream(inputStream)) {
             Resume resume = new Resume(dataInputStream.readUTF(), dataInputStream.readUTF());
 
-            int contactCounter = dataInputStream.readInt();
-            for (; contactCounter > 0; --contactCounter) {
+            readWithException(dataInputStream, () -> {
                 resume.addContact(ContactType.valueOf(dataInputStream.readUTF()), dataInputStream.readUTF());
-            }
+            });
 
-            int sectionCounter = dataInputStream.readInt();
-            for (; sectionCounter > 0; --sectionCounter) {
+            readWithException(dataInputStream, () -> {
                 SectionType sectionType = SectionType.valueOf(dataInputStream.readUTF());
                 switch (sectionType) {
                     case OBJECTIVE:
@@ -76,36 +74,33 @@ public class DataStreamStrategy implements StreamStrategy {
                         break;
                     case ACHIEVEMENTS:
                     case QUALIFICATIONS:
-                        int lineCounter = dataInputStream.readInt();
                         ListSection listSection = new ListSection();
-                        for (; lineCounter > 0; --lineCounter) {
+                        readWithException(dataInputStream, () -> {
                             listSection.addLine(dataInputStream.readUTF());
-                        }
+                        });
                         resume.addSection(sectionType, listSection);
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
-                        int companyCounter = dataInputStream.readInt();
                         CompanyListSection companyListSection = new CompanyListSection();
-                        for (; companyCounter > 0; --companyCounter) {
+                        readWithException(dataInputStream, () -> {
                             String companyName = dataInputStream.readUTF();
                             String companyUrl = dataInputStream.readUTF();
                             Company company = new Company(companyName, companyUrl.isEmpty() ? null : companyUrl);
-                            int periodCounter = dataInputStream.readInt();
-                            for (; periodCounter > 0; --periodCounter) {
+                            readWithException(dataInputStream, () -> {
                                 String periodTitle = dataInputStream.readUTF();
                                 String periodDescription = dataInputStream.readUTF();
                                 company.addPeriod(new Company.Period(periodTitle,
                                         periodDescription.isEmpty() ? null : periodDescription,
                                         LocalDate.parse(dataInputStream.readUTF()),
                                         LocalDate.parse(dataInputStream.readUTF())));
-                            }
+                            });
                             companyListSection.addCompany(company);
-                        }
+                        });
                         resume.addSection(sectionType, companyListSection);
                         break;
                 }
-            }
+            });
             return resume;
         }
     }
@@ -124,6 +119,21 @@ public class DataStreamStrategy implements StreamStrategy {
         dataOutputStream.writeInt(collection.size());
         for (T t : collection) {
             action.accept(t);
+        }
+    }
+
+    @FunctionalInterface
+    private interface RunnableWithException {
+        void run() throws IOException;
+    }
+
+    private static void readWithException(DataInputStream dataInputStream,
+                                          RunnableWithException action) throws IOException {
+        Objects.requireNonNull(dataInputStream);
+        Objects.requireNonNull(action);
+        int counter = dataInputStream.readInt();
+        for (; counter > 0; --counter) {
+            action.run();
         }
     }
 }
