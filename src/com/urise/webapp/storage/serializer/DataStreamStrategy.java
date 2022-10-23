@@ -4,9 +4,7 @@ import com.urise.webapp.model.*;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class DataStreamStrategy implements StreamStrategy {
 
@@ -17,15 +15,13 @@ public class DataStreamStrategy implements StreamStrategy {
             dataOutputStream.writeUTF(resume.getFullName());
 
             Map<ContactType, String> contacts = resume.getContacts();
-            dataOutputStream.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> contact : contacts.entrySet()) {
+            writeWithException(contacts.entrySet(), dataOutputStream, contact -> {
                 dataOutputStream.writeUTF(contact.getKey().name());
                 dataOutputStream.writeUTF(contact.getValue());
-            }
+            });
 
             Map<SectionType, Section> sections = resume.getSections();
-            dataOutputStream.writeInt(sections.size());
-            for (Map.Entry<SectionType, Section> section : sections.entrySet()) {
+            writeWithException(sections.entrySet(), dataOutputStream, section -> {
                 SectionType sectionType = section.getKey();
                 dataOutputStream.writeUTF(sectionType.name());
                 switch (sectionType) {
@@ -36,30 +32,25 @@ public class DataStreamStrategy implements StreamStrategy {
                     case ACHIEVEMENTS:
                     case QUALIFICATIONS:
                         List<String> stringList = ((ListSection) section.getValue()).getList();
-                        dataOutputStream.writeInt(stringList.size());
-                        for (String line : stringList) {
-                            dataOutputStream.writeUTF(line);
-                        }
+                        writeWithException(stringList, dataOutputStream, dataOutputStream::writeUTF);
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
                         List<Company> companyList = ((CompanyListSection) section.getValue()).getCompanies();
-                        dataOutputStream.writeInt(companyList.size());
-                        for (Company company : companyList) {
+                        writeWithException(companyList, dataOutputStream, company -> {
                             dataOutputStream.writeUTF(company.getName());
                             dataOutputStream.writeUTF(Optional.ofNullable(company.getUrl()).orElse(""));
                             List<Company.Period> periods = company.getPeriods();
-                            dataOutputStream.writeInt(periods.size());
-                            for (Company.Period period : periods) {
+                            writeWithException(periods, dataOutputStream, period -> {
                                 dataOutputStream.writeUTF(period.getTitle());
                                 dataOutputStream.writeUTF(Optional.ofNullable(period.getDescription()).orElse(""));
                                 dataOutputStream.writeUTF(period.getBeginDate().toString());
                                 dataOutputStream.writeUTF(period.getEndDate().toString());
-                            }
-                        }
+                            });
+                        });
                         break;
                 }
-            }
+            });
         }
     }
 
@@ -116,6 +107,23 @@ public class DataStreamStrategy implements StreamStrategy {
                 }
             }
             return resume;
+        }
+    }
+
+    @FunctionalInterface
+    private interface ConsumerWithException<T> {
+        void accept(T t) throws IOException;
+    }
+
+    private static <T> void writeWithException(Collection<? extends T> collection,
+                                               DataOutputStream dataOutputStream,
+                                               ConsumerWithException<? super T> action) throws IOException {
+        Objects.requireNonNull(collection);
+        Objects.requireNonNull(dataOutputStream);
+        Objects.requireNonNull(action);
+        dataOutputStream.writeInt(collection.size());
+        for (T t : collection) {
+            action.accept(t);
         }
     }
 }
