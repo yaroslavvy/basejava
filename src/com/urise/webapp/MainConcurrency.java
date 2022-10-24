@@ -14,9 +14,19 @@ public class MainConcurrency {
         }
     }
 
-    public static class Violin {} //скрипка
+    public static class Violin {
+        @Override
+        public String toString() {
+            return "Violin";
+        }
+    } //скрипка
 
-    public static class Bow {} //смычок
+    public static class Bow {
+        @Override
+        public String toString() {
+            return "Bow";
+        }
+    } //смычок
 
     public static class Musician implements Runnable {
         private final String name;
@@ -27,26 +37,16 @@ public class MainConcurrency {
 
         @Override
         public void run() {
-            playFirstSong();
-            playSecondSong();
+            playSong("first song", bow, violin);
+            playSong("second song", violin, bow);
         }
 
-        private void playFirstSong () {
-            synchronized (violin) {
-                System.out.println(name + " takes the VIOLIN and waiting for BOW for playing the first song");
-                synchronized (bow) {
-                    System.out.println(name + " takes the BOW for playing the first song");
-                    System.out.println(name + " is playing the first song");
-                }
-            }
-        }
-
-        private void playSecondSong () {
-            synchronized (bow) {
-                System.out.println(name + " takes the BOW and waiting for VIOLIN for playing the second song");
-                synchronized (violin) {
-                    System.out.println(name + " takes the VIOLIN for playing the second song");
-                    System.out.println(name + " is playing the second song");
+        private void playSong(String songName, Object firstBlockObject, Object secondBlockObject) {
+            synchronized (firstBlockObject) {
+                System.out.println(name + " takes the " + firstBlockObject + " and waiting for " + secondBlockObject + " for playing the " + songName);
+                synchronized (secondBlockObject) {
+                    System.out.println(name + " takes the " + secondBlockObject + " for playing the " + songName);
+                    System.out.println(name + " is playing the " + songName);
                 }
             }
         }
