@@ -35,7 +35,7 @@ public class StreamAPITasks {
         return Arrays.stream(values)
                 .distinct()
                 .sorted()
-                .reduce(0, (a,b) -> 10 * a + b);
+                .reduce(0, (a, b) -> 10 * a + b);
     }
 
     private static List<Integer> oddOrEven(List<Integer> integers) {

@@ -19,7 +19,8 @@ import org.junit.platform.suite.api.SuiteDisplayName;
         JsonStreamFileStorageTest.class,
         JsonStreamPathStorageTest.class,
         DataStreamFileStorageTest.class,
-        DataStreamPathStorageTest.class
+        DataStreamPathStorageTest.class,
+        SqlStorageTest.class
 })
 public class SuiteAllStorageTest {
 }

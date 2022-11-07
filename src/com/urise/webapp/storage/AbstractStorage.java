@@ -1,5 +1,6 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.Config;
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
@@ -15,7 +16,7 @@ public abstract class AbstractStorage<SK> implements Storage {
     private static final Logger LOGGER;
 
     static {
-        Configurator.initialize(null, "src/resources/log4j2.xml");
+        Configurator.initialize(null, Config.get().getLogConfig());
         LOGGER = LoggerFactory.getLogger(AbstractStorage.class);
     }
 

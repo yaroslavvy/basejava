@@ -3,7 +3,6 @@ package com.urise.webapp;
 import com.urise.webapp.model.*;
 import com.urise.webapp.util.DateUtil;
 
-import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -20,7 +19,7 @@ public class ResumeTestData {
     public static Resume createAndFillResume(String uuid, String fullName) {
 
         Resume resume = new Resume(uuid, fullName);
-
+/*
         resume.addContact(ContactType.PHONE, "+7(921) 855-0482");
         resume.addContact(ContactType.SKYPE, "skype:grigory.kislin");
         resume.addContact(ContactType.MAIL, "gkislin@yandex.ru");
@@ -201,7 +200,7 @@ public class ResumeTestData {
         resume.addSection(SectionType.QUALIFICATIONS, qualifications);
         resume.addSection(SectionType.EXPERIENCE, experience);
         resume.addSection(SectionType.EDUCATION, education);
-
+*/
         return resume;
     }
 

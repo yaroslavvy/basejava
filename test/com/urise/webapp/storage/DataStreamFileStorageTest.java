@@ -3,6 +3,7 @@ package com.urise.webapp.storage;
 import com.urise.webapp.ResumeTestData;
 import com.urise.webapp.model.Resume;
 import com.urise.webapp.storage.serializer.DataStreamStrategy;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
@@ -13,6 +14,7 @@ class DataStreamFileStorageTest extends AbstractStorageTest {
         super(new FileStorage(new File(STORAGE_DIR), new DataStreamStrategy()));
     }
 
+    @Test
     @Override
     void update() {
         Resume updatedResume = ResumeTestData.createAndFillResume(UUID_3, NEW_FULL_NAME_3);
