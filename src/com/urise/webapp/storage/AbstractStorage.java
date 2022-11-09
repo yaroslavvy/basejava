@@ -16,7 +16,7 @@ public abstract class AbstractStorage<SK> implements Storage {
     private static final Logger LOGGER;
 
     static {
-        Configurator.initialize(null, Config.get().getLogConfig());
+        Configurator.initialize(null, Config.get().getStorage().getProperty("log.config"));
         LOGGER = LoggerFactory.getLogger(AbstractStorage.class);
     }
 
@@ -27,16 +27,9 @@ public abstract class AbstractStorage<SK> implements Storage {
 
     @Override
     public final void save(Resume resume) {
-        LOGGER.info("resume uuid: " + resume);
+        LOGGER.info("resume uuid: " + resume.getUuid());
         SK searchKey = getNotExistingSearchKey(resume.getUuid());
-        try {
-            doSave(searchKey, resume);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);// TODO Del me. I know it bad practice. ↓↓↓
-            // Rule - catch and log or catch and throw in another exception. Never both. Only for demonstration of logger work
-            throw e;
-        }
-
+        doSave(searchKey, resume);
     }
 
     @Override
@@ -62,7 +55,7 @@ public abstract class AbstractStorage<SK> implements Storage {
 
     @Override
     public final void update(Resume resume) {
-        LOGGER.info("resume uuid: " + resume);
+        LOGGER.info("resume uuid: " + resume.getUuid());
         SK searchKey = getExistingSearchKey(resume.getUuid());
         doUpdate(searchKey, resume);
     }
@@ -70,10 +63,7 @@ public abstract class AbstractStorage<SK> implements Storage {
     private SK getExistingSearchKey(String uuid) {
         SK searchKey = getSearchKey(uuid);
         if (!isExist(searchKey)) {
-            NotExistStorageException exception = new NotExistStorageException(uuid);
-            LOGGER.error(exception.getMessage(), exception);// TODO Del me. I know it bad practice. ↓↓↓
-            // Rule - catch and log or catch and throw in another exception. Never both. Only for demonstration of logger work
-            throw exception;
+            throw new NotExistStorageException(uuid);
         }
         return searchKey;
     }
@@ -81,10 +71,7 @@ public abstract class AbstractStorage<SK> implements Storage {
     private SK getNotExistingSearchKey(String uuid) {
         SK searchKey = getSearchKey(uuid);
         if (isExist(searchKey)) {
-            ExistStorageException exception = new ExistStorageException(uuid);
-            LOGGER.error(exception.getMessage(), exception);// TODO Del me. I know it bad practice. ↓↓↓
-            // Rule - catch and log or catch and throw in another exception. Never both. Only for demonstration of logger work
-            throw exception;
+            throw new ExistStorageException(uuid);
         }
         return searchKey;
     }
