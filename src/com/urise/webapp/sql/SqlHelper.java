@@ -18,13 +18,13 @@ public class SqlHelper {
 
     static {
         Config config = Config.get();
-        Configurator.initialize(null, config.getStorage().getProperty("log.config"));
+        Configurator.initialize(null, config.getProperties().getProperty("log.config"));
         LOGGER = LoggerFactory.getLogger(SqlHelper.class);
         connectionFactory = () -> DriverManager.getConnection(
-                config.getStorage().getProperty("db.url"),
-                config.getStorage().getProperty("db.user"),
-                config.getStorage().getProperty("db.password"));
-        LOGGER.info("connection factory was initialize with " + config.getStorage().getProperty("db.url"));
+                config.getProperties().getProperty("db.url"),
+                config.getProperties().getProperty("db.user"),
+                config.getProperties().getProperty("db.password"));
+        LOGGER.info("connection factory was initialize with " + config.getProperties().getProperty("db.url"));
     }
 
     @FunctionalInterface

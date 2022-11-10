@@ -18,7 +18,7 @@ public class SqlStorage implements Storage {
     private static final Logger LOGGER;
 
     static {
-        Configurator.initialize(null, Config.get().getStorage().getProperty("log.config"));
+        Configurator.initialize(null, Config.get().getProperties().getProperty("log.config"));
         LOGGER = LoggerFactory.getLogger(SqlStorage.class);
     }
 
