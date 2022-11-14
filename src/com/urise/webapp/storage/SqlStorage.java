@@ -61,7 +61,7 @@ public class SqlStorage implements Storage {
                 (ps) -> {
                     ps.setString(1, uuid);
                     LOGGER.info("trying to execute sql statement: " + ps);
-                    sqlHelper.executeUpdateAndLogIfNothingUpdates(ps, () -> new NotExistStorageException(uuid));
+                    sqlHelper.executeUpdateAndLogIfNothingUpdates(ps, uuid);
                     return null;
                 });
     }
@@ -99,7 +99,7 @@ public class SqlStorage implements Storage {
                     ps.setString(1, resume.getFullName());
                     ps.setString(2, resume.getUuid());
                     LOGGER.info("trying to execute sql statement: " + ps);
-                    sqlHelper.executeUpdateAndLogIfNothingUpdates(ps, () -> new NotExistStorageException(resume.getUuid()));
+                    sqlHelper.executeUpdateAndLogIfNothingUpdates(ps, resume.getUuid());
                     return null;
                 });
     }

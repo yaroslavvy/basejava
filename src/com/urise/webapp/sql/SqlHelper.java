@@ -2,6 +2,7 @@ package com.urise.webapp.sql;
 
 import com.urise.webapp.LoggerConfig;
 import com.urise.webapp.exception.ExistStorageException;
+import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.exception.StorageException;
 import org.slf4j.Logger;
 
@@ -39,14 +40,9 @@ public class SqlHelper {
         }
     }
 
-    @FunctionalInterface
-    public interface ExceptionSupplier {
-        StorageException get();
-    }
-
-    public void executeUpdateAndLogIfNothingUpdates(PreparedStatement ps, ExceptionSupplier exceptionSupplier) throws SQLException {
+    public void executeUpdateAndLogIfNothingUpdates(PreparedStatement ps, String uuid) throws SQLException {
         if (ps.executeUpdate() == 0) {
-            throw exceptionSupplier.get();
+            throw new NotExistStorageException(uuid);
         }
     }
 }
