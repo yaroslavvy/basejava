@@ -16,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 abstract class AbstractStorageTest {
     protected final Storage storage;
-    protected static final String UUID_1 = "uuid1";
-    protected static final String UUID_2 = "uuid2";
-    protected static final String UUID_3 = "uuid3";
+    protected static final String UUID_1 = "11111111-1111-1111-1111-111111111111";
+    protected static final String UUID_2 = "22222222-2222-2222-2222-222222222222";
+    protected static final String UUID_3 = "33333333-3333-3333-3333-333333333333";
     protected static final String UUID_NOT_EXIST = "dummy";
     protected static final String FULL_NAME_1 = "Иван Петров";
     protected static final String FULL_NAME_2 = "Иван Петров";
@@ -51,7 +51,7 @@ abstract class AbstractStorageTest {
 
     @Test
     void save() {
-        Resume newResume = ResumeTestData.createAndFillResume("uuid4");
+        Resume newResume = ResumeTestData.createAndFillResume(NEW_FULL_NAME_3);
         storage.save(newResume);
         assertGet(newResume);
         assertSize(4);
@@ -123,7 +123,7 @@ abstract class AbstractStorageTest {
     @Test
     void updateNotExist() {
         assertThrows(NotExistStorageException.class, () -> {
-            storage.update(new Resume(UUID_NOT_EXIST));
+            storage.update(new Resume(NEW_FULL_NAME_3));
         });
     }
 

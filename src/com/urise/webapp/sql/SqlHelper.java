@@ -1,6 +1,7 @@
 package com.urise.webapp.sql;
 
 import com.urise.webapp.LoggerConfig;
+import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.StorageException;
 import org.slf4j.Logger;
 
@@ -30,7 +31,11 @@ public class SqlHelper {
             LOGGER.info("get connection from connection factory");
             return function.apply(ps);
         } catch (SQLException e) {
-            throw new StorageException(e);
+            if (e.getSQLState().equals(SqlHelper.SQLSTATE_DUPLICATE_KEY)) {
+                throw new ExistStorageException(e);
+            } else {
+                throw new StorageException(e);
+            }
         }
     }
 

@@ -1,14 +1,12 @@
 package com.urise.webapp.storage;
 
 import com.urise.webapp.LoggerConfig;
-import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
 import com.urise.webapp.sql.SqlHelper;
 import org.slf4j.Logger;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,13 +35,7 @@ public class SqlStorage implements Storage {
                     ps.setString(1, resume.getUuid());
                     ps.setString(2, resume.getFullName());
                     LOGGER.info("trying to execute sql statement: " + ps);
-                    try {
-                        ps.execute();
-                    } catch (SQLException e) {
-                        if (e.getSQLState().equals(SqlHelper.SQLSTATE_DUPLICATE_KEY)) {
-                            throw new ExistStorageException(e);
-                        }
-                    }
+                    ps.execute();
                     return null;
                 });
     }
@@ -58,7 +50,7 @@ public class SqlStorage implements Storage {
                     if (!resultSet.next()) {
                         throw new NotExistStorageException(uuid);
                     }
-                    Resume resume = new Resume(resultSet.getString("resume_id").trim(), resultSet.getString("full_name"));
+                    Resume resume = new Resume(resultSet.getString("resume_id"), resultSet.getString("full_name"));
                     return resume;
                 });
     }
@@ -82,7 +74,7 @@ public class SqlStorage implements Storage {
                     ResultSet resultSet = ps.executeQuery();
                     List<Resume> resumes = new ArrayList<>();
                     while (resultSet.next()) {
-                        Resume resume = new Resume(resultSet.getString("resume_id").trim(), resultSet.getString("full_name"));
+                        Resume resume = new Resume(resultSet.getString("resume_id"), resultSet.getString("full_name"));
                         resumes.add(resume);
                     }
                     return resumes;
