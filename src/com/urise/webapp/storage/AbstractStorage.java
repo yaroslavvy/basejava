@@ -1,24 +1,17 @@
 package com.urise.webapp.storage;
 
-import com.urise.webapp.Config;
+import com.urise.webapp.LoggerConfig;
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractStorage<SK> implements Storage {
 
-    private static final Logger LOGGER;
-
-    static {
-        Configurator.initialize(null, Config.get().getProperties().getProperty("log.config"));
-        LOGGER = LoggerFactory.getLogger(AbstractStorage.class);
-    }
+    private static final Logger LOGGER = LoggerConfig.getLogger(AbstractStorage.class);
 
     protected static final Comparator<Resume> RESUME_COMPARATOR_FULL_NAME_THEN_UUID =
             Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
