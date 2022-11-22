@@ -32,17 +32,38 @@ public class SqlHelper {
             LOGGER.info("get connection from connection factory");
             return function.apply(ps);
         } catch (SQLException e) {
-            if (e.getSQLState().equals(SqlHelper.SQLSTATE_DUPLICATE_KEY)) {
-                throw new ExistStorageException(e);
-            } else {
-                throw new StorageException(e);
-            }
+            throw convertException(e);
         }
     }
 
     public void executeUpdateAndLogIfNothingUpdates(PreparedStatement ps, String uuid) throws SQLException {
         if (ps.executeUpdate() == 0) {
             throw new NotExistStorageException(uuid);
+        }
+    }
+
+    public <T> T transactionExecute(SqlTransaction<T> executor) {
+        try (Connection connection = connectionFactory.getConnection()) {
+            LOGGER.info("get connection from connection factory");
+            try {
+                connection.setAutoCommit(false);
+                T result = executor.execute(connection);
+                connection.commit();
+                return result;
+            } catch (SQLException e) {
+                connection.rollback();
+                throw convertException(e);
+            }
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    private StorageException convertException(SQLException e) {
+        if (e.getSQLState().equals(SqlHelper.SQLSTATE_DUPLICATE_KEY)) {
+            return new ExistStorageException(e);
+        } else {
+            return new StorageException(e);
         }
     }
 }
