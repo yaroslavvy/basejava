@@ -28,7 +28,7 @@ public class ResumeTestData {
         resume.addContact(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/548473/grigory-kislin");
         resume.addContact(ContactType.HOMEPAGE, "http://gkislin.ru/");
 
-/*
+
         TextSection objective = new TextSection();
         objective.setText("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям");
 
@@ -78,7 +78,7 @@ public class ResumeTestData {
         qualifications.addLine("Отличное знание и опыт применения концепций ООП, SOA, шаблонов проектрирования," +
                 " архитектурных шаблонов, UML, функционального программирования");
         qualifications.addLine("Родной русский, английский \"upper intermediate\"");
-
+/*
         CompanyListSection experience = new CompanyListSection();
         Company javaOnlineProject = new Company("Java Online Projects", "https://javaops.ru/");
         javaOnlineProject.addPeriod(new Company.Period("Автор проекта.",
@@ -194,14 +194,16 @@ public class ResumeTestData {
                 DateUtil.of(1984, Month.SEPTEMBER),
                 DateUtil.of(1987, Month.JUNE)));
         education.addCompany(mfti);
-
+*/
         resume.addSection(SectionType.OBJECTIVE, objective);
         resume.addSection(SectionType.PERSONAL, personal);
         resume.addSection(SectionType.ACHIEVEMENTS, achievements);
         resume.addSection(SectionType.QUALIFICATIONS, qualifications);
+/*
         resume.addSection(SectionType.EXPERIENCE, experience);
         resume.addSection(SectionType.EDUCATION, education);
 */
+
         return resume;
     }
 

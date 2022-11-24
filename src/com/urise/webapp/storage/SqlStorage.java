@@ -2,8 +2,7 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.LoggerConfig;
 import com.urise.webapp.exception.NotExistStorageException;
-import com.urise.webapp.model.ContactType;
-import com.urise.webapp.model.Resume;
+import com.urise.webapp.model.*;
 import com.urise.webapp.sql.SqlHelper;
 import org.slf4j.Logger;
 
@@ -13,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -46,6 +46,7 @@ public class SqlStorage implements Storage {
                 ps.execute();
             }
             insertContacts(resume, connection);
+            insertTextAndLineSections(resume, connection);
             return null;
         });
     }
@@ -67,7 +68,17 @@ public class SqlStorage implements Storage {
                     do {
                         addContact(resume, resultSet);
                     } while (resultSet.next());
-                    return resume;
+
+                    return sqlHelper.executeStatement("SELECT * FROM list_sections WHERE resume_id = ?",
+                            (ps2) -> {
+                                ps2.setString(1, uuid);
+                                LOGGER.info("trying to execute sql statement: " + ps2);
+                                ResultSet resultSet2 = ps2.executeQuery();
+                                if (resultSet2.next()) {
+                                    addSections(resume, resultSet2);
+                                }
+                                return resume;
+                            });
                 });
     }
 
@@ -101,7 +112,16 @@ public class SqlStorage implements Storage {
                                     String resume_id = resultSet2.getString("resume_id");
                                     addContact(resumeMap.get(resume_id), resultSet2);
                                 }
-                                return resumeMap.values().stream().sorted(RESUME_COMPARATOR_FULL_NAME_THEN_UUID).collect(Collectors.toList());
+                                return sqlHelper.executeStatement("SELECT * FROM list_sections ORDER BY resume_id",
+                                        (ps3) -> {
+                                            LOGGER.info("trying to execute sql statement: " + ps3);
+                                            ResultSet resultSet3 = ps3.executeQuery();
+                                            if (resultSet3.next()) {
+                                                while (addSections(resumeMap.get(resultSet3.getString("resume_id")), resultSet3)) {
+                                                }
+                                            }
+                                            return resumeMap.values().stream().sorted(RESUME_COMPARATOR_FULL_NAME_THEN_UUID).collect(Collectors.toList());
+                                        });
                             });
                 });
     }
@@ -132,6 +152,12 @@ public class SqlStorage implements Storage {
                 ps.execute();
             }
             insertContacts(resume, connection);
+            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM list_sections WHERE resume_id = ?")) {
+                ps.setString(1, resume.getUuid());
+                LOGGER.info("trying to execute sql statement: " + ps);
+                ps.execute();
+            }
+            insertTextAndLineSections(resume, connection);
             return null;
         });
     }
@@ -154,6 +180,82 @@ public class SqlStorage implements Storage {
         String value = resultSet.getString("value");
         if (value != null) {
             resume.addContact(contactType, value);
+        }
+    }
+
+    private void insertTextAndLineSections(Resume resume, Connection connection) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement("INSERT INTO list_sections (resume_id, section_type_id, line_order, value) VALUES (?, ?, ?, ?)")) {
+            for (Map.Entry<SectionType, Section> entry : resume.getSections().entrySet()) {
+                switch (entry.getKey()) {
+                    case OBJECTIVE:
+                    case PERSONAL:
+                        ps.setString(1, resume.getUuid());
+                        ps.setInt(2, entry.getKey().ordinal());
+                        ps.setInt(3, 0);
+                        ps.setString(4, ((TextSection) entry.getValue()).getText());
+                        ps.addBatch();
+                        break;
+                    case ACHIEVEMENTS:
+                    case QUALIFICATIONS:
+                        ListIterator<String> listIterator = ((ListSection) entry.getValue()).getList().listIterator();
+                        while (listIterator.hasNext()) {
+                            ps.setString(1, resume.getUuid());
+                            ps.setInt(2, entry.getKey().ordinal());
+                            ps.setInt(3, listIterator.nextIndex());
+                            ps.setString(4, listIterator.next());
+                            ps.addBatch();
+                        }
+                        break;
+                    default:
+                }
+            }
+            LOGGER.info("trying to execute sql statement: " + ps);
+            ps.executeBatch();
+        }
+    }
+
+    private boolean addSections(Resume resume, ResultSet resultSet) throws SQLException {
+        Map<Integer, String> achievementsMap = new HashMap();
+        Map<Integer, String> qualificationsMap = new HashMap();
+        boolean next = false;
+        do {
+            if (!resume.getUuid().equals(resultSet.getString("resume_id"))) {
+                next = true;
+                break;
+            }
+            SectionType sectionType = SectionType.values()[resultSet.getInt("section_type_id")];
+            switch (sectionType) {
+                case OBJECTIVE:
+                case PERSONAL:
+                    TextSection textSection = new TextSection();
+                    textSection.setText(resultSet.getString("value"));
+                    resume.addSection(sectionType, textSection);
+                    break;
+                case ACHIEVEMENTS:
+                    addLineToMap(achievementsMap, resultSet);
+                    break;
+                case QUALIFICATIONS:
+                    addLineToMap(qualificationsMap, resultSet);
+                    break;
+                default:
+            }
+        } while (resultSet.next());
+        addListSection(resume, SectionType.ACHIEVEMENTS, achievementsMap);
+        addListSection(resume, SectionType.QUALIFICATIONS, qualificationsMap);
+        return next;
+    }
+
+    private void addLineToMap(Map<Integer, String> map, ResultSet resultSet) throws SQLException {
+        map.put(resultSet.getInt("line_order"), resultSet.getString("value"));
+    }
+
+    private void addListSection(Resume resume, SectionType sectionType, Map<Integer, String> map) {
+        if (!map.isEmpty()) {
+            ListSection listSection = new ListSection();
+            map.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEachOrdered(entry -> listSection.addLine(entry.getValue()));
+            resume.addSection(sectionType, listSection);
         }
     }
 }
