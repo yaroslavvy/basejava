@@ -1,6 +1,7 @@
 package com.urise.webapp;
 
 import com.urise.webapp.model.*;
+import com.urise.webapp.storage.Storage;
 import com.urise.webapp.util.DateUtil;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 public class ResumeTestData {
     public static void main(String[] args) {
-        printResume(createAndFillResume("someUUID", "Григорий Кислин"));
+        System.out.println(printResume(createAndFillResume("someUUID", "Григорий Кислин")));
     }
 
     public static Resume createAndFillResume(String fullName) {
@@ -207,15 +208,18 @@ public class ResumeTestData {
         return resume;
     }
 
-    private static void printResume(Resume resume) {
-        System.out.println(resume.getFullName());
+    public static String printResume(Resume resume) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(resume.getFullName());
+        stringBuilder.append('\n');
 
-        System.out.println();
+        stringBuilder.append('\n');
         Map<ContactType, String> contacts = resume.getContacts();
         for (ContactType contactType : ContactType.values()) {
             String contactValue = contacts.get(contactType);
             if (contactValue != null) {
-                System.out.println(contactType.getTitle() + contactValue);
+                stringBuilder.append(contactType.getTitle() + contactValue);
+                stringBuilder.append('\n');
             }
         }
 
@@ -226,21 +230,25 @@ public class ResumeTestData {
                 switch (sectionType) {
                     case OBJECTIVE:
                     case PERSONAL:
-                        System.out.println();
+                        stringBuilder.append('\n');
                         String text = ((TextSection) section).getText();
                         if (text != null) {
-                            System.out.println(sectionType.getTitle());
-                            System.out.println(text);
+                            stringBuilder.append(sectionType.getTitle());
+                            stringBuilder.append('\n');
+                            stringBuilder.append(text);
+                            stringBuilder.append('\n');
                         }
                         break;
                     case ACHIEVEMENTS:
                     case QUALIFICATIONS:
-                        System.out.println();
+                        stringBuilder.append('\n');
                         List<String> stringList = ((ListSection) section).getList();
                         if (stringList != null) {
-                            System.out.println(sectionType.getTitle());
+                            stringBuilder.append(sectionType.getTitle());
+                            stringBuilder.append('\n');
                             for (String line : stringList) {
-                                System.out.println("\u00B7 " + line);
+                                stringBuilder.append("\u00B7 " + line);
+                                stringBuilder.append('\n');
                             }
                         }
                         break;
@@ -248,28 +256,33 @@ public class ResumeTestData {
                     case EDUCATION:
                         List<Company> companyList = ((CompanyListSection) section).getCompanies();
                         if (companyList != null) {
-                            System.out.println();
-                            System.out.println(sectionType.getTitle());
+                            stringBuilder.append('\n');
+                            stringBuilder.append(sectionType.getTitle());
+                            stringBuilder.append('\n');
                             for (Company company : companyList) {
                                 if (company != null) {
-                                    System.out.println();
+                                    stringBuilder.append('\n');
                                     String name = company.getName();
                                     if (name != null) {
-                                        System.out.println(name);
+                                        stringBuilder.append(name);
+                                        stringBuilder.append('\n');
                                     }
                                     String website = company.getUrl();
                                     if (website != null) {
-                                        System.out.println(website);
+                                        stringBuilder.append(website);
+                                        stringBuilder.append('\n');
                                     }
                                     List<Company.Period> periods = company.getPeriods();
                                     if (periods != null) {
                                         for (Company.Period period : periods) {
-                                            System.out.println(period.getBeginDate() + " - "
+                                            stringBuilder.append(period.getBeginDate() + " - "
                                                     + (DateUtil.NOW.isEqual(period.getEndDate()) ? "Сейчас" : period.getEndDate().toString())
                                                     + "\t\t" + period.getTitle());
+                                            stringBuilder.append('\n');
                                             String description = period.getDescription();
                                             if (description != null) {
-                                                System.out.println(description);
+                                                stringBuilder.append(description);
+                                                stringBuilder.append('\n');
                                             }
                                         }
                                     }
@@ -278,6 +291,17 @@ public class ResumeTestData {
                         }
                         break;
                 }
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private static class TestDB {
+        public static void main(String[] args) {
+            Storage storage = Config.get().getStorage();
+            for (int i = 0; i < 10000; i++) {
+                storage.save(createAndFillResume("Рандом Рандомыч " + Math.random()));
+                System.out.println(i);
             }
         }
     }

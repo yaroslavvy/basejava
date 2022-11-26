@@ -17,6 +17,11 @@ public class SqlHelper {
     private final ConnectionFactory connectionFactory;
 
     public SqlHelper(String url, String user, String password) {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new StorageException(e);
+        }
         connectionFactory = () -> DriverManager.getConnection(url, user, password);
         LOGGER.info("connection factory was initialize with " + url);
     }

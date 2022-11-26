@@ -1,3 +1,6 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.urise.webapp.model.Resume" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,20 +15,18 @@
         <header id="header" class="hoc clear">
             <nav id="mainav" class="clear">
                 <ul class="clear">
-                    <li><a href="index.html">Главная</a></li>
-                    <li class="active"><a class="drop" href="index.html">Резюме</a>
+                    <li><a href="/resumes">Главная</a></li>
+                    <li class="active"><a class="drop" href="/resumes/resume">Резюме</a>
                         <ul>
-                            <li><a href="index.html">Показать все</a></li>
-                            <li><a href="404.html">Что-то 1</a></li>
-                            <li><a href="404.html">Что-то 2</a></li>
-                            <li><a href="404.html">Что-то 3</a></li>
-                            <li><a href="404.html">Что-то 4</a></li>
+                            <li><a href="/resumes/resume">Показать все</a></li>
+                            <li><a href="https://ya.ru/">Яндекс</a></li>
+                            <li><a href="https://www.google.com/">Google</a></li>
                         </ul>
                     </li>
                 </ul>
             </nav>
             <div id="logo">
-                <h2><a href="index.html">Рекрутинговое агенство "Рога и копыта"</a></h2>
+                <h2><a href="/resumes">Рекрутинговое агенство "Рога и копыта"</a></h2>
             </div>
         </header>
     </div>
@@ -33,32 +34,31 @@
 <div class="wrapper row3">
     <main class="hoc container clear">
         <div class="content">
-            <h1>Список резюме</h1>
+            <%
+                List<Resume> resumeList = (List<Resume>) request.getAttribute("resumeList");
+            %>
+            <h1>Найдено резюме: <%=resumeList.size()%></h1>
             <div class="scrollable">
                 <table>
                     <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Фамилия Имя</th>
+                        <th>Имя Фамилия</th>
                     </tr>
                     </thead>
                     <tbody>
+                    <%
+                        for (Resume resume : resumeList) {
+                    %>
                     <tr>
-                        <td><a href="index.html?uuid=32432423">32432423</a></td>
-                        <td>fdgd htrhrth</td>
+                        <td><a href="/resumes/resume?uuid=<%=resume.getUuid()%>"><%=resume.getUuid()%>
+                        </a></td>
+                        <td><%=resume.getFullName()%>
+                        </td>
                     </tr>
-                    <tr>
-                        <td><a href="index.html?uuid=32432423">32432423</a></td>
-                        <td>fdgd htrhrth</td>
-                    </tr>
-                    <tr>
-                        <td><a href="index.html?uuid=32432423">32432423</a></td>
-                        <td>fdgd htrhrth</td>
-                    </tr>
-                    <tr>
-                        <td><a href="index.html?uuid=32432423">32432423</a></td>
-                        <td>fdgd htrhrth</td>
-                    </tr>
+                    <%
+                        }
+                    %>
                     </tbody>
                 </table>
             </div>
