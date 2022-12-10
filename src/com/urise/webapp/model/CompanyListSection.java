@@ -20,6 +20,10 @@ public class CompanyListSection extends Section {
         companies.add(company);
     }
 
+    public static CompanyListSection cast (Section section) {
+        return (CompanyListSection) section;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

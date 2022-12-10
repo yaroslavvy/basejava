@@ -145,18 +145,10 @@ public class SqlStorage implements Storage {
                 ps.setString(2, resume.getUuid());
                 LOGGER.info("trying to execute sql statement: " + ps);
                 sqlHelper.executeUpdateAndLogIfNothingUpdates(ps, resume.getUuid());
-            }
-            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM contacts WHERE resume_id = ?")) {
-                ps.setString(1, resume.getUuid());
-                LOGGER.info("trying to execute sql statement: " + ps);
-                ps.execute();
-            }
+                }
+            deleteAttributes(connection, "DELETE FROM contacts WHERE resume_id = ?", resume);
             insertContacts(resume, connection);
-            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM list_sections WHERE resume_id = ?")) {
-                ps.setString(1, resume.getUuid());
-                LOGGER.info("trying to execute sql statement: " + ps);
-                ps.execute();
-            }
+            deleteAttributes(connection, "DELETE FROM list_sections WHERE resume_id = ?", resume);
             insertTextAndLineSections(resume, connection);
             return null;
         });
@@ -256,6 +248,14 @@ public class SqlStorage implements Storage {
                     .sorted(Map.Entry.comparingByKey())
                     .forEachOrdered(entry -> listSection.addLine(entry.getValue()));
             resume.addSection(sectionType, listSection);
+        }
+    }
+
+    private void deleteAttributes(Connection connection, String sqlStatement, Resume resume) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(sqlStatement)) {
+            ps.setString(1, resume.getUuid());
+            LOGGER.info("trying to execute sql statement: " + ps);
+            ps.execute();
         }
     }
 }

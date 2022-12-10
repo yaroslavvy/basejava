@@ -20,6 +20,10 @@ public class ListSection extends Section {
         list.add(line);
     }
 
+    public static ListSection cast (Section section) {
+        return (ListSection) section;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

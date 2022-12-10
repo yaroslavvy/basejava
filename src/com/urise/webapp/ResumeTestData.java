@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class ResumeTestData {
     public static void main(String[] args) {
-        System.out.println(printResume(createAndFillResume("someUUID", "Григорий Кислин")));
+        System.out.println(printResume(createAndFillResume("someUUID", "Григорий Кислин"), false));
     }
 
     public static Resume createAndFillResume(String fullName) {
@@ -22,7 +22,7 @@ public class ResumeTestData {
         Resume resume = new Resume(uuid, fullName);
 
         resume.addContact(ContactType.PHONE, "+7(921) 855-0482");
-        resume.addContact(ContactType.SKYPE, "skype:grigory.kislin");
+        resume.addContact(ContactType.SKYPE, "grigory.kislin");
         resume.addContact(ContactType.MAIL, "gkislin@yandex.ru");
         resume.addContact(ContactType.LINKEDIN, "https://www.linkedin.com/in/gkislin");
         resume.addContact(ContactType.GITHUB, "https://github.com/gkislin");
@@ -208,18 +208,28 @@ public class ResumeTestData {
         return resume;
     }
 
-    public static String printResume(Resume resume) {
+    public static String printResume(Resume resume, boolean htmlFormat) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(resume.getFullName());
-        stringBuilder.append('\n');
+        newLine(stringBuilder, htmlFormat);
 
-        stringBuilder.append('\n');
+        newLine(stringBuilder, htmlFormat);
         Map<ContactType, String> contacts = resume.getContacts();
         for (ContactType contactType : ContactType.values()) {
             String contactValue = contacts.get(contactType);
             if (contactValue != null) {
-                stringBuilder.append(contactType.getTitle() + contactValue);
-                stringBuilder.append('\n');
+                stringBuilder.append(contactType.getTitle() + ": ");
+                switch (contactType) {
+                    case MAIL:
+                        stringBuilder.append(htmlFormat ? "<a href='mailto:" + contactValue + "'>" + contactValue + "</a>" : contactValue);
+                    break;
+                    case SKYPE:
+                        stringBuilder.append(htmlFormat ? "<a href='skype:" + contactValue + "'>" + contactValue + "</a>" : contactValue);
+                    break;
+                    default:
+                        stringBuilder.append(contactValue);
+                }
+                newLine(stringBuilder, htmlFormat);
             }
         }
 
@@ -230,25 +240,25 @@ public class ResumeTestData {
                 switch (sectionType) {
                     case OBJECTIVE:
                     case PERSONAL:
-                        stringBuilder.append('\n');
+                        newLine(stringBuilder, htmlFormat);
                         String text = ((TextSection) section).getText();
                         if (text != null) {
                             stringBuilder.append(sectionType.getTitle());
-                            stringBuilder.append('\n');
+                            newLine(stringBuilder, htmlFormat);
                             stringBuilder.append(text);
-                            stringBuilder.append('\n');
+                            newLine(stringBuilder, htmlFormat);
                         }
                         break;
                     case ACHIEVEMENTS:
                     case QUALIFICATIONS:
-                        stringBuilder.append('\n');
+                        newLine(stringBuilder, htmlFormat);
                         List<String> stringList = ((ListSection) section).getList();
                         if (stringList != null) {
                             stringBuilder.append(sectionType.getTitle());
-                            stringBuilder.append('\n');
+                            newLine(stringBuilder, htmlFormat);
                             for (String line : stringList) {
                                 stringBuilder.append("\u00B7 " + line);
-                                stringBuilder.append('\n');
+                                newLine(stringBuilder, htmlFormat);
                             }
                         }
                         break;
@@ -256,21 +266,21 @@ public class ResumeTestData {
                     case EDUCATION:
                         List<Company> companyList = ((CompanyListSection) section).getCompanies();
                         if (companyList != null) {
-                            stringBuilder.append('\n');
+                            newLine(stringBuilder, htmlFormat);
                             stringBuilder.append(sectionType.getTitle());
-                            stringBuilder.append('\n');
+                            newLine(stringBuilder, htmlFormat);
                             for (Company company : companyList) {
                                 if (company != null) {
-                                    stringBuilder.append('\n');
+                                    newLine(stringBuilder, htmlFormat);
                                     String name = company.getName();
                                     if (name != null) {
                                         stringBuilder.append(name);
-                                        stringBuilder.append('\n');
+                                        newLine(stringBuilder, htmlFormat);
                                     }
                                     String website = company.getUrl();
                                     if (website != null) {
                                         stringBuilder.append(website);
-                                        stringBuilder.append('\n');
+                                        newLine(stringBuilder, htmlFormat);
                                     }
                                     List<Company.Period> periods = company.getPeriods();
                                     if (periods != null) {
@@ -278,11 +288,11 @@ public class ResumeTestData {
                                             stringBuilder.append(period.getBeginDate() + " - "
                                                     + (DateUtil.NOW.isEqual(period.getEndDate()) ? "Сейчас" : period.getEndDate().toString())
                                                     + "\t\t" + period.getTitle());
-                                            stringBuilder.append('\n');
+                                            newLine(stringBuilder, htmlFormat);
                                             String description = period.getDescription();
                                             if (description != null) {
                                                 stringBuilder.append(description);
-                                                stringBuilder.append('\n');
+                                                newLine(stringBuilder, htmlFormat);
                                             }
                                         }
                                     }
@@ -296,10 +306,14 @@ public class ResumeTestData {
         return stringBuilder.toString();
     }
 
+    private static void newLine(StringBuilder stringBuilder, boolean htmlFormat) {
+        stringBuilder.append(htmlFormat ? "<br>" : "\n");
+    }
+
     private static class TestDB {
         public static void main(String[] args) {
             Storage storage = Config.get().getStorage();
-            for (int i = 0; i < 10000; i++) {
+            for (int i = 0; i < 5; i++) {
                 storage.save(createAndFillResume("Рандом Рандомыч " + Math.random()));
                 System.out.println(i);
             }
