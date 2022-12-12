@@ -56,6 +56,30 @@ CREATE TABLE list_sections
     CONSTRAINT ch_list_sections_line_order CHECK (line_order >= 0)
 );
 
+CREATE TABLE companies
+(
+    company_id SERIAL PRIMARY KEY,
+    company_name TEXT UNIQUE NOT NULL,
+    url TEXT
+);
+
+CREATE TABLE periods
+(
+    resume_id CHAR(36) NOT NULL
+        CONSTRAINT fk_resumes_periods REFERENCES resumes (resume_id) ON DELETE CASCADE,
+    company_id SERIAL NOT NULL
+        CONSTRAINT fk_companies_periods REFERENCES companies (company_id) ON DELETE CASCADE,
+    section_type_id INT NOT NULL
+        CONSTRAINT fk_section_types_periods REFERENCES section_types (section_type_id) ON DELETE CASCADE,
+    begin_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    title TEXT,
+    description TEXT,
+    CONSTRAINT pk_periods PRIMARY KEY (resume_id, company_id, section_type_id, begin_date, end_date),
+    CONSTRAINT ch_section_types_periods CHECK (section_type_id BETWEEN 4 AND 5),
+    CONSTRAINT ch_begin_end_date CHECK (begin_date <= end_date)
+);
+
 ALTER TABLE resumes
     OWNER TO postgres;
 ALTER TABLE contact_types
@@ -66,3 +90,8 @@ ALTER TABLE section_types
     OWNER TO postgres;
 ALTER TABLE list_sections
     OWNER TO postgres;
+ALTER TABLE companies
+    OWNER TO postgres;
+ALTER TABLE periods
+    OWNER TO postgres;
+
