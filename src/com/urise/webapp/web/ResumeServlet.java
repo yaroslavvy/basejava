@@ -10,11 +10,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 public class ResumeServlet extends HttpServlet {
     private Storage storage;
@@ -68,8 +66,7 @@ public class ResumeServlet extends HttpServlet {
                         req.getRequestDispatcher("WEB-INF/jsp/404.jsp").forward(req, resp);
                 }
                 return;
-            }
-            else {
+            } else {
                 switch (action) {
                     case CREATE:
                         req.getRequestDispatcher("WEB-INF/jsp/edit.jsp").forward(req, resp);
@@ -95,8 +92,7 @@ public class ResumeServlet extends HttpServlet {
             resume = new Resume(req.getParameter("fullName"));
             fillResume(req, resume);
             storage.save(resume);
-        }
-        else {
+        } else {
             resume = new Resume(uuid, req.getParameter("fullName"));
             fillResume(req, resume);
             storage.update(resume);
@@ -104,7 +100,7 @@ public class ResumeServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/resume?action=view&uuid=" + resume.getUuid());
     }
 
-    private void fillResume (HttpServletRequest req, Resume resume) {
+    private void fillResume(HttpServletRequest req, Resume resume) {
         for (ContactType contactType : ContactType.values()) {
             String contact = req.getParameter(contactType.name());
             if (contact != null && !contact.isEmpty()) {

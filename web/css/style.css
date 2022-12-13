@@ -43,9 +43,14 @@
 }
 
 #header #logo h2 {
-    font-size: 32px;
+    font-size: 30px;
     letter-spacing: 2px;
     text-transform: uppercase;
+}
+
+#header #logo h3 {
+    font-size: 24px;
+    letter-spacing: 2px;
 }
 
 #header #logo p {

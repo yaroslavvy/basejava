@@ -4,6 +4,8 @@ import com.urise.webapp.model.*;
 import com.urise.webapp.storage.Storage;
 import com.urise.webapp.util.DateUtil;
 
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -79,7 +81,7 @@ public class ResumeTestData {
         qualifications.addLine("Отличное знание и опыт применения концепций ООП, SOA, шаблонов проектрирования," +
                 " архитектурных шаблонов, UML, функционального программирования");
         qualifications.addLine("Родной русский, английский \"upper intermediate\"");
-/*
+
         CompanyListSection experience = new CompanyListSection();
         Company javaOnlineProject = new Company("Java Online Projects", "https://javaops.ru/");
         javaOnlineProject.addPeriod(new Company.Period("Автор проекта.",
@@ -195,15 +197,13 @@ public class ResumeTestData {
                 DateUtil.of(1984, Month.SEPTEMBER),
                 DateUtil.of(1987, Month.JUNE)));
         education.addCompany(mfti);
-*/
+
         resume.addSection(SectionType.OBJECTIVE, objective);
         resume.addSection(SectionType.PERSONAL, personal);
         resume.addSection(SectionType.ACHIEVEMENTS, achievements);
         resume.addSection(SectionType.QUALIFICATIONS, qualifications);
-/*
         resume.addSection(SectionType.EXPERIENCE, experience);
         resume.addSection(SectionType.EDUCATION, education);
-*/
 
         return resume;
     }
@@ -222,10 +222,10 @@ public class ResumeTestData {
                 switch (contactType) {
                     case MAIL:
                         stringBuilder.append(htmlFormat ? "<a href='mailto:" + contactValue + "'>" + contactValue + "</a>" : contactValue);
-                    break;
+                        break;
                     case SKYPE:
                         stringBuilder.append(htmlFormat ? "<a href='skype:" + contactValue + "'>" + contactValue + "</a>" : contactValue);
-                    break;
+                        break;
                     default:
                         stringBuilder.append(contactValue);
                 }
@@ -243,7 +243,7 @@ public class ResumeTestData {
                         newLine(stringBuilder, htmlFormat);
                         String text = ((TextSection) section).getText();
                         if (text != null) {
-                            stringBuilder.append(sectionType.getTitle());
+                            stringBuilder.append(htmlFormat ? "<h3>" + sectionType.getTitle() + "</h3>" : sectionType.getTitle());
                             newLine(stringBuilder, htmlFormat);
                             stringBuilder.append(text);
                             newLine(stringBuilder, htmlFormat);
@@ -254,7 +254,7 @@ public class ResumeTestData {
                         newLine(stringBuilder, htmlFormat);
                         List<String> stringList = ((ListSection) section).getList();
                         if (stringList != null) {
-                            stringBuilder.append(sectionType.getTitle());
+                            stringBuilder.append(htmlFormat ? "<h3>" + sectionType.getTitle() + "</h3>" : sectionType.getTitle());
                             newLine(stringBuilder, htmlFormat);
                             for (String line : stringList) {
                                 stringBuilder.append("\u00B7 " + line);
@@ -267,26 +267,28 @@ public class ResumeTestData {
                         List<Company> companyList = ((CompanyListSection) section).getCompanies();
                         if (companyList != null) {
                             newLine(stringBuilder, htmlFormat);
-                            stringBuilder.append(sectionType.getTitle());
-                            newLine(stringBuilder, htmlFormat);
+                            stringBuilder.append(htmlFormat ? "<h3>" + sectionType.getTitle() + "</h3>" : sectionType.getTitle());
                             for (Company company : companyList) {
                                 if (company != null) {
                                     newLine(stringBuilder, htmlFormat);
                                     String name = company.getName();
+                                    String website = company.getUrl();
                                     if (name != null) {
-                                        stringBuilder.append(name);
+                                        stringBuilder.append(htmlFormat ?
+                                                (website != null ? "<a href='" + website + "'>" + name + "</a>" : name)
+                                                : name);
                                         newLine(stringBuilder, htmlFormat);
                                     }
-                                    String website = company.getUrl();
-                                    if (website != null) {
+                                    if (website != null && !htmlFormat) {
                                         stringBuilder.append(website);
                                         newLine(stringBuilder, htmlFormat);
                                     }
                                     List<Company.Period> periods = company.getPeriods();
                                     if (periods != null) {
                                         for (Company.Period period : periods) {
-                                            stringBuilder.append(period.getBeginDate() + " - "
-                                                    + (DateUtil.NOW.isEqual(period.getEndDate()) ? "Сейчас" : period.getEndDate().toString())
+                                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+                                            stringBuilder.append(period.getBeginDate().format(formatter) + " - "
+                                                    + (DateUtil.NOW.isEqual(period.getEndDate()) ? "Сейчас" : period.getEndDate().format(formatter))
                                                     + "\t\t" + period.getTitle());
                                             newLine(stringBuilder, htmlFormat);
                                             String description = period.getDescription();

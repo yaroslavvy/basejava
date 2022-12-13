@@ -6,7 +6,8 @@ public class TextSection extends Section {
     private static final long serialVersionUID = 1L;
     private String text;
 
-    public TextSection() {}
+    public TextSection() {
+    }
 
     public String getText() {
         return text;
@@ -17,7 +18,7 @@ public class TextSection extends Section {
         this.text = text;
     }
 
-    public static TextSection cast (Section section) {
+    public static TextSection cast(Section section) {
         return (TextSection) section;
     }
 

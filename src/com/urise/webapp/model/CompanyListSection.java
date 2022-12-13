@@ -20,7 +20,7 @@ public class CompanyListSection extends Section {
         companies.add(company);
     }
 
-    public static CompanyListSection cast (Section section) {
+    public static CompanyListSection cast(Section section) {
         return (CompanyListSection) section;
     }
 

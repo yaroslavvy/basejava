@@ -34,7 +34,7 @@
                 </p>
                 <p>
                     <c:forEach var="type" items="<%=SectionType.values()%>">
-                        <h1>${type.title}</h1>
+                        <h3>${type.title}</h3>
                         <c:choose>
                             <c:when test="${type == SectionType.OBJECTIVE || type == SectionType.PERSONAL}">
                                 <textarea type="text" name="${type.name()}" cols="100" rows="4">${TextSection.cast(resume.getSections().get(type)).getText()}</textarea><br>

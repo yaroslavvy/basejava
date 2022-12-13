@@ -6,14 +6,9 @@ import com.urise.webapp.model.*;
 import com.urise.webapp.sql.SqlHelper;
 import org.slf4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.sql.Date;
+import java.sql.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.urise.webapp.storage.AbstractStorage.RESUME_COMPARATOR_FULL_NAME_THEN_UUID;
@@ -46,7 +41,8 @@ public class SqlStorage implements Storage {
                 ps.execute();
             }
             insertContacts(resume, connection);
-            insertTextAndLineSections(resume, connection);
+            insertTextAndListSections(resume, connection);
+            insertCompanyListSections(resume, connection);
             return null;
         });
     }
@@ -75,9 +71,21 @@ public class SqlStorage implements Storage {
                                 LOGGER.info("trying to execute sql statement: " + ps2);
                                 ResultSet resultSet2 = ps2.executeQuery();
                                 if (resultSet2.next()) {
-                                    addSections(resume, resultSet2);
+                                    addTextAndListSections(resume, resultSet2);
                                 }
-                                return resume;
+                                return sqlHelper.executeStatement("" +
+                                                "SELECT * FROM company_list_sections cls " +
+                                                "JOIN periods p ON cls.company_id = p.company_id " +
+                                                "WHERE cls.resume_id = ?",
+                                        (ps3) -> {
+                                            ps3.setString(1, uuid);
+                                            LOGGER.info("trying to execute sql statement: " + ps3);
+                                            ResultSet resultSet3 = ps3.executeQuery();
+                                            if (resultSet3.next()) {
+                                                addCompanyListSections(resume, resultSet3);
+                                            }
+                                            return resume;
+                                        });
                             });
                 });
     }
@@ -117,10 +125,22 @@ public class SqlStorage implements Storage {
                                             LOGGER.info("trying to execute sql statement: " + ps3);
                                             ResultSet resultSet3 = ps3.executeQuery();
                                             if (resultSet3.next()) {
-                                                while (addSections(resumeMap.get(resultSet3.getString("resume_id")), resultSet3)) {
+                                                while (addTextAndListSections(resumeMap.get(resultSet3.getString("resume_id")), resultSet3)) {
                                                 }
                                             }
-                                            return resumeMap.values().stream().sorted(RESUME_COMPARATOR_FULL_NAME_THEN_UUID).collect(Collectors.toList());
+                                            return sqlHelper.executeStatement("" +
+                                                            "SELECT * FROM company_list_sections cls " +
+                                                            "JOIN periods p ON cls.company_id = p.company_id " +
+                                                            "ORDER BY resume_id",
+                                                    (ps4) -> {
+                                                        LOGGER.info("trying to execute sql statement: " + ps4);
+                                                        ResultSet resultSet4 = ps4.executeQuery();
+                                                        if (resultSet4.next()) {
+                                                            while (addCompanyListSections(resumeMap.get(resultSet4.getString("resume_id")), resultSet4)) {
+                                                            }
+                                                        }
+                                                        return resumeMap.values().stream().sorted(RESUME_COMPARATOR_FULL_NAME_THEN_UUID).collect(Collectors.toList());
+                                                    });
                                         });
                             });
                 });
@@ -145,11 +165,13 @@ public class SqlStorage implements Storage {
                 ps.setString(2, resume.getUuid());
                 LOGGER.info("trying to execute sql statement: " + ps);
                 sqlHelper.executeUpdateAndLogIfNothingUpdates(ps, resume.getUuid());
-                }
+            }
             deleteAttributes(connection, "DELETE FROM contacts WHERE resume_id = ?", resume);
             insertContacts(resume, connection);
             deleteAttributes(connection, "DELETE FROM list_sections WHERE resume_id = ?", resume);
-            insertTextAndLineSections(resume, connection);
+            insertTextAndListSections(resume, connection);
+            deleteAttributes(connection, "DELETE FROM company_list_sections WHERE resume_id = ?", resume);
+            insertCompanyListSections(resume, connection);
             return null;
         });
     }
@@ -175,7 +197,7 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void insertTextAndLineSections(Resume resume, Connection connection) throws SQLException {
+    private void insertTextAndListSections(Resume resume, Connection connection) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement("INSERT INTO list_sections (resume_id, section_type_id, line_order, value) VALUES (?, ?, ?, ?)")) {
             for (Map.Entry<SectionType, Section> entry : resume.getSections().entrySet()) {
                 switch (entry.getKey()) {
@@ -206,7 +228,57 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private boolean addSections(Resume resume, ResultSet resultSet) throws SQLException {
+    private void insertCompanyListSections(Resume resume, Connection connection) throws SQLException {
+        Map<String, Company> companyMap = new HashMap<>();
+        try (PreparedStatement ps = connection.prepareStatement("" +
+                "INSERT INTO company_list_sections (company_id, resume_id, section_type_id, company_order, company_name, company_url)" +
+                " VALUES (?, ?, ?, ?, ?, ?)")) {
+            for (Map.Entry<SectionType, Section> entry : resume.getSections().entrySet()) {
+                switch (entry.getKey()) {
+                    case EDUCATION:
+                    case EXPERIENCE:
+                        ListIterator<Company> companyListIterator = ((CompanyListSection) entry.getValue()).getCompanies().listIterator();
+                        while (companyListIterator.hasNext()) {
+                            String companyId = UUID.randomUUID().toString();
+                            ps.setString(1, companyId);
+                            ps.setString(2, resume.getUuid());
+                            ps.setInt(3, entry.getKey().ordinal());
+                            ps.setInt(4, companyListIterator.nextIndex());
+                            Company company = companyListIterator.next();
+                            companyMap.put(companyId, company);
+                            ps.setString(5, company.getName());
+                            ps.setString(6, company.getUrl());
+                            ps.addBatch();
+                        }
+                        break;
+                    default:
+                }
+            }
+            LOGGER.info("trying to execute sql statement: " + ps);
+            ps.executeBatch();
+        }
+        try (PreparedStatement ps = connection.prepareStatement("" +
+                "INSERT INTO periods (company_id, period_order, begin_date, end_date, title, description)" +
+                " VALUES (?, ?, ?, ?, ?, ?)")) {
+            for (Map.Entry<String, Company> entry : companyMap.entrySet()) {
+                ListIterator<Company.Period> periodListIterator = entry.getValue().getPeriods().listIterator();
+                while (periodListIterator.hasNext()) {
+                    ps.setString(1, entry.getKey());
+                    ps.setInt(2, periodListIterator.nextIndex());
+                    Company.Period period = periodListIterator.next();
+                    ps.setDate(3, Date.valueOf(period.getBeginDate()));
+                    ps.setDate(4, Date.valueOf(period.getEndDate()));
+                    ps.setString(5, period.getTitle());
+                    ps.setString(6, period.getDescription());
+                    ps.addBatch();
+                }
+            }
+            LOGGER.info("trying to execute sql statement: " + ps);
+            ps.executeBatch();
+        }
+    }
+
+    private boolean addTextAndListSections(Resume resume, ResultSet resultSet) throws SQLException {
         Map<Integer, String> achievementsMap = new HashMap();
         Map<Integer, String> qualificationsMap = new HashMap();
         boolean next = false;
@@ -248,6 +320,65 @@ public class SqlStorage implements Storage {
                     .sorted(Map.Entry.comparingByKey())
                     .forEachOrdered(entry -> listSection.addLine(entry.getValue()));
             resume.addSection(sectionType, listSection);
+        }
+    }
+
+    private boolean addCompanyListSections(Resume resume, ResultSet resultSet) throws SQLException {
+        Map<Integer, Company> educationCompanyMap = new HashMap();
+        Map<Integer, Company> experienceCompanyMap = new HashMap();
+        Map<Integer, HashMap<Integer, Company.Period>> educationPeriodMap = new HashMap();
+        Map<Integer, HashMap<Integer, Company.Period>> experiencePeriodMap = new HashMap();
+        boolean next = false;
+
+        do {
+            if (!resume.getUuid().equals(resultSet.getString("resume_id"))) {
+                next = true;
+                break;
+            }
+            SectionType sectionType = SectionType.values()[resultSet.getInt("section_type_id")];
+            switch (sectionType) {
+                case EDUCATION:
+                    addCompaniesAndPeriodsToMaps(educationCompanyMap, educationPeriodMap, resultSet);
+                    break;
+                case EXPERIENCE:
+                    addCompaniesAndPeriodsToMaps(experienceCompanyMap, experiencePeriodMap, resultSet);
+                    break;
+                default:
+            }
+        } while (resultSet.next());
+        addCompanyListSection(resume, SectionType.EDUCATION, educationCompanyMap, educationPeriodMap);
+        addCompanyListSection(resume, SectionType.EXPERIENCE, experienceCompanyMap, experiencePeriodMap);
+        return next;
+    }
+
+    private void addCompaniesAndPeriodsToMaps(Map<Integer, Company> companyMap,
+                                              Map<Integer, HashMap<Integer, Company.Period>> periodMap,
+                                              ResultSet resultSet) throws SQLException {
+        int companyOrder = resultSet.getInt("company_order");
+        companyMap.putIfAbsent(companyOrder,
+                new Company(resultSet.getString("company_name"), resultSet.getString("company_url")));
+        periodMap.putIfAbsent(companyOrder, new HashMap<>());
+        Company.Period period = new Company.Period(resultSet.getString("title"),
+                resultSet.getString("description"),
+                resultSet.getDate("begin_date").toLocalDate(),
+                resultSet.getDate("end_date").toLocalDate());
+        periodMap.get(companyOrder).put(resultSet.getInt("period_order"), period);
+    }
+
+    private void addCompanyListSection(Resume resume, SectionType sectionType, Map<Integer, Company> companyMap,
+                                       Map<Integer, HashMap<Integer, Company.Period>> periodMap) {
+        if (!periodMap.isEmpty()) {
+            CompanyListSection companyListSection = new CompanyListSection();
+            periodMap.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEachOrdered(periods -> {
+                        Company company = companyMap.get(periods.getKey());
+                        periods.getValue().entrySet().stream()
+                                .sorted(Map.Entry.comparingByKey())
+                                .forEachOrdered(entry -> company.addPeriod(entry.getValue()));
+                        companyListSection.addCompany(company);
+                    });
+            resume.addSection(sectionType, companyListSection);
         }
     }
 

@@ -20,7 +20,7 @@ public class ListSection extends Section {
         list.add(line);
     }
 
-    public static ListSection cast (Section section) {
+    public static ListSection cast(Section section) {
         return (ListSection) section;
     }
 
