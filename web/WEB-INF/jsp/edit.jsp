@@ -1,4 +1,7 @@
 <%@ page import="com.urise.webapp.model.*" %>
+<%@ page import="com.urise.webapp.util.*" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page buffer="900kb" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -33,6 +36,7 @@
                     </c:forEach>
                 </p>
                 <p>
+                    <c:set var="formatter" value='${DateTimeFormatter.ofPattern("MM/yyyy")}' scope="page"/>
                     <c:forEach var="type" items="<%=SectionType.values()%>">
                         <h3>${type.title}</h3>
                         <c:choose>
@@ -53,7 +57,37 @@
                                 </c:choose>
                             </c:when>
                             <c:when test="${type == SectionType.EXPERIENCE || type == SectionType.EDUCATION}">
-                                <p style="color: red">TODO</p>
+                                <c:set var="companies" value="${CompanyListSection.cast(resume.getSections().get(type)).getCompanies()}"/>
+                                <c:choose>
+                                    <c:when test="${companies == null}">
+                                        <input type="hidden" name="${type.name()}" value="1">
+                                        Название организации:<input type="text" name="companyName"/><br>
+                                        Сайт организации:<input type="text" name="companyUrl"/><br>
+                                        <input type="hidden" name="periodCounter" value="1">
+                                        Период с <input type="text" name="periodBeginDate"/>
+                                        по <input type="text" name="periodEndDate"/><br>
+                                        Должность:<textarea type="text" name="periodTitle" cols="100" rows="2"></textarea><br>
+                                        Описание:<textarea type="text" name="periodDescription" cols="100" rows="4"></textarea><br>
+                                    </c:when>
+                                    <c:when test="${companies != null}">
+                                        <c:set var="companyCounter" value="0" scope="page"/>
+                                        <c:forEach var="company" items="${companies}">
+                                            Название организации:<input type="text" name="companyName" value="${company.getName()}"/><br>
+                                            Сайт организации:<input type="text" name="companyUrl" value="${company.getUrl()}"/><br>
+                                            <c:set var="periodCounter" value="0" scope="page"/>
+                                            <c:forEach var="period" items="${company.getPeriods()}">
+                                                Период с <input type="text" name="periodBeginDate" value="${period.getBeginDate().format(formatter)}"/>
+                                                по <input type="text" name="periodEndDate" value="${DateUtil.NOW.isEqual(period.getEndDate()) ? "Сейчас" : period.getEndDate().format(formatter)}"/><br>
+                                                Должность:<textarea type="text" name="periodTitle" cols="100" rows="2">${period.getTitle()}</textarea><br>
+                                                Описание:<textarea type="text" name="periodDescription" cols="100" rows="4">${period.getDescription()}</textarea><br><br>
+                                                <c:set var="periodCounter" value="${periodCounter + 1}" scope="page"/>
+                                            </c:forEach>
+                                            <input type="hidden" name="periodCounter" value="${periodCounter}">
+                                            <c:set var="companyCounter" value="${companyCounter + 1}" scope="page"/>
+                                        </c:forEach>
+                                        <input type="hidden" name="${type.name()}" value="${companyCounter}">
+                                    </c:when>
+                                </c:choose>
                             </c:when>
                         </c:choose>
                     </c:forEach>

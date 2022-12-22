@@ -4,6 +4,7 @@ import com.urise.webapp.Config;
 import com.urise.webapp.ResumeTestData;
 import com.urise.webapp.model.*;
 import com.urise.webapp.storage.Storage;
+import com.urise.webapp.util.DateUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -11,8 +12,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.IntStream;
 
 public class ResumeServlet extends HttpServlet {
     private Storage storage;
@@ -130,11 +135,84 @@ public class ResumeServlet extends HttpServlet {
                         }
                         resume.addSection(sectionType, listSection);
                     }
-                case EXPERIENCE:
-                case EDUCATION:
-                    //TODO
+                    break;
+                default:
                     break;
             }
+        }
+
+        SectionType firstSectionType = SectionType.EXPERIENCE.ordinal() < SectionType.EDUCATION.ordinal() ?
+                SectionType.EXPERIENCE : SectionType.EDUCATION;
+        SectionType secondSectionType = SectionType.EXPERIENCE.ordinal() >= SectionType.EDUCATION.ordinal() ?
+                SectionType.EXPERIENCE : SectionType.EDUCATION;
+        String firstSectionCompanyCounter = req.getParameter(firstSectionType.name());
+        String secondSectionCompanyCounter = req.getParameter(secondSectionType.name());
+        int firstSectionCompanyBeginIndex = -1;
+        if (firstSectionCompanyCounter != null && !firstSectionCompanyCounter.isEmpty() && Integer.parseInt(firstSectionCompanyCounter) != 0) {
+            firstSectionCompanyBeginIndex = 0;
+        }
+        int secondSectionCompanyBeginIndex = -1;
+        if (secondSectionCompanyCounter != null && !secondSectionCompanyCounter.isEmpty() && Integer.parseInt(secondSectionCompanyCounter) != 0) {
+            secondSectionCompanyBeginIndex = firstSectionCompanyBeginIndex == 0 ? Integer.parseInt(firstSectionCompanyCounter) : 0;
+        }
+        String[] companyNames = req.getParameterValues("companyName");
+        String[] companyUrls = req.getParameterValues("companyUrl");
+        String[] periodCountersStr = req.getParameterValues("periodCounter");
+        String[] periodBeginDates = req.getParameterValues("periodBeginDate");
+        String[] periodEndDates = req.getParameterValues("periodEndDate");
+        String[] periodTitles = req.getParameterValues("periodTitle");
+        String[] periodDescriptions = req.getParameterValues("periodDescription");
+
+        if (companyNames == null || companyUrls == null || periodCountersStr == null
+                || periodBeginDates == null || periodEndDates == null
+                || periodTitles == null || periodDescriptions == null) {
+            throw new IllegalArgumentException("Wrong POST request for EXPERIENCE or/and EDUCATION section(s): " +
+                    "Some parameters are absent" + req.getQueryString());
+        }
+        int[] periodCounters = Arrays.stream(periodCountersStr)
+                .flatMapToInt(num -> IntStream.of(Integer.parseInt(num))).toArray();
+        int periodSum = Arrays.stream(periodCounters).sum();
+        if (companyNames.length > 0 &&
+                companyNames.length == companyUrls.length &&
+                companyUrls.length == periodCounters.length &&
+                periodSum == periodBeginDates.length &&
+                periodSum == periodEndDates.length &&
+                periodSum == periodTitles.length &&
+                periodSum == periodDescriptions.length) {
+            CompanyListSection firstSection = new CompanyListSection();
+            CompanyListSection secondSection = new CompanyListSection();
+            int mainPeriodCounter = 0;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            for (int i = 0; i < companyNames.length; ++i) {
+                String companyName = companyNames[i];
+                if (companyName != null && !companyName.isEmpty() && periodCounters[i] > 0) {
+                    Company company = new Company(companyName, companyUrls[i]);
+                    for (int j = 0; j < periodCounters[i]; ++j) {
+                        String periodTitle = periodTitles[mainPeriodCounter];
+                        LocalDate beginDate = LocalDate.parse("01/" + periodBeginDates[mainPeriodCounter], formatter);
+                        String endDateStr = periodEndDates[mainPeriodCounter];
+                        LocalDate endDate = endDateStr.equals("Сейчас") || endDateStr.isEmpty() ?
+                                DateUtil.NOW : LocalDate.parse("01/" + endDateStr, formatter);
+                        if (periodTitle != null && !periodTitle.isEmpty() && beginDate != null && endDate != null) {
+                            Company.Period period = new Company.Period(periodTitle,
+                                    periodDescriptions[mainPeriodCounter].isEmpty() ? null : periodDescriptions[mainPeriodCounter],
+                                    beginDate, endDate);
+                            company.addPeriod(period);
+                        }
+                        ++mainPeriodCounter;
+                    }
+                    if (i < secondSectionCompanyBeginIndex || secondSectionCompanyBeginIndex == -1) {
+                        firstSection.addCompany(company);
+                    } else {
+                        secondSection.addCompany(company);
+                    }
+                }
+            }
+            resume.addSection(firstSectionType, firstSection);
+            resume.addSection(secondSectionType, secondSection);
+        } else {
+            throw new IllegalArgumentException("Wrong POST request for EXPERIENCE or/and EDUCATION section(s): " +
+                    "Some parameters have wrong value" + req.getQueryString());
         }
     }
 }
